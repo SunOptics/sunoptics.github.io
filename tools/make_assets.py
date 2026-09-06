@@ -4,8 +4,8 @@ make_assets.py — generate the site's figurative assets from the physics itself
 
     python3 tools/make_assets.py
 
-Writes assets/img/soliton-rule.svg, favicon.svg and og.png.  Everything is
-produced by integrating the Lugiato-Lefever equation
+Writes assets/img/soliton-rule.svg and favicon.svg.  Both are produced by
+integrating the Lugiato-Lefever equation
 
     dE/dt = S - (1 + i*theta) E + i |E|^2 E + i d^2E/dtau^2
 
@@ -16,8 +16,6 @@ network.  Run it once and commit the output; nothing runs at deploy time.
 import cmath
 import math
 import os
-import struct
-import zlib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG = os.path.join(ROOT, "assets", "img")
@@ -127,50 +125,6 @@ class LLE(object):
 
 # ------------------------------------------------------------- a PNG encoder
 
-def png(path, width, height, rows):
-    """rows: list of height lists of (r,g,b). Pure stdlib, no Pillow."""
-    raw = bytearray()
-    for row in rows:
-        raw.append(0)                       # filter type 0
-        for r, g, b in row:
-            raw += bytes((r, g, b))
-
-    def chunk(tag, data):
-        c = struct.pack(">I", len(data)) + tag + data
-        return c + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF)
-
-    out = b"\x89PNG\r\n\x1a\n"
-    out += chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
-    out += chunk(b"IDAT", zlib.compress(bytes(raw), 9))
-    out += chunk(b"IEND", b"")
-    with open(path, "wb") as fh:
-        fh.write(out)
-    return os.path.getsize(path)
-
-
-def blend(dst, src, alpha):
-    return tuple(int(round(d + (s - d) * alpha)) for d, s in zip(dst, src))
-
-
-def line(rows, w, h, x0, y0, x1, y1, colour, alpha=1.0):
-    """Xiaolin-Wu-ish: plain Bresenham with a soft vertical neighbour."""
-    steps = int(max(abs(x1 - x0), abs(y1 - y0))) + 1
-    for i in range(steps + 1):
-        t = i / steps
-        x = x0 + (x1 - x0) * t
-        y = y0 + (y1 - y0) * t
-        xi = int(round(x))
-        if xi < 0 or xi >= w:
-            continue
-        yf = math.floor(y)
-        frac = y - yf
-        for yy, a in ((yf, (1 - frac) * alpha), (yf + 1, frac * alpha)):
-            if 0 <= yy < h and a > 0.004:
-                rows[yy][xi] = blend(rows[yy][xi], colour, a)
-
-
-# -------------------------------------------------------------------- assets
-
 def trace_path(values, width, height, pad=1.0):
     top = max(values)
     pts = []
@@ -235,92 +189,6 @@ def make_favicon(values):
     return path
 
 
-RAMP = [
-    (0, 0, 0), (12, 12, 10), (44, 46, 27), (87, 88, 48), (139, 139, 71),
-    (192, 192, 100), (187, 179, 80), (182, 165, 54), (187, 153, 37),
-    (187, 138, 19), (187, 124, 3), (189, 110, 0), (196, 99, 0), (206, 85, 5),
-    (219, 71, 22), (231, 60, 41), (235, 51, 58), (231, 46, 71), (223, 42, 87),
-    (204, 37, 107), (177, 36, 134), (146, 36, 160), (124, 36, 177),
-    (107, 37, 190), (88, 41, 199), (70, 42, 204), (49, 46, 202), (32, 51, 201),
-    (22, 58, 201), (14, 66, 201), (5, 76, 202), (0, 90, 204), (0, 107, 213),
-    (0, 124, 223),
-]
-
-
-def ramp(t):
-    """Height -> colour, sampled from the author's own published figure."""
-    t = 0.0 if t < 0 else (1.0 if t > 1 else t)
-    f = t * (len(RAMP) - 1)
-    k = min(len(RAMP) - 2, int(f))
-    f -= k
-    a, b = RAMP[k], RAMP[k + 1]
-    return (int(a[0] + (b[0] - a[0]) * f),
-            int(a[1] + (b[1] - a[1]) * f),
-            int(a[2] + (b[2] - a[2]) * f))
-
-
-def fill_quad(rows, W, H, pts, colour):
-    """Scanline fill of a small convex quad. Enough for a surf plot; the cells
-    are only a few pixels across."""
-    ys = [p[1] for p in pts]
-    y0 = max(0, int(math.floor(min(ys))))
-    y1 = min(H - 1, int(math.ceil(max(ys))))
-    n = len(pts)
-    for y in range(y0, y1 + 1):
-        yc = y + 0.5
-        xs = []
-        for i in range(n):
-            ax, ay = pts[i]
-            bx, by = pts[(i + 1) % n]
-            if (ay <= yc < by) or (by <= yc < ay):
-                xs.append(ax + (bx - ax) * (yc - ay) / (by - ay))
-        if len(xs) < 2:
-            continue
-        lo, hi = min(xs), max(xs)
-        x0 = max(0, int(math.floor(lo)))
-        x1 = min(W - 1, int(math.ceil(hi)))
-        row = rows[y]
-        for x in range(x0, x1 + 1):
-            row[x] = colour
-
-
-def make_og(traces, gamma=0.78):
-    """The share image: the same surface the front page draws, rendered here so
-    the card people see in Slack is the same figure."""
-    W, H = 1200, 630
-    rows = [[(0, 0, 0)] * W for _ in range(H)]
-    M = len(traces)
-    N = len(traces[0])
-    top = max(max(t) for t in traces)
-    ox, oy = 0.44 * W, 0.40 * H
-    ax, ay = 0.50 * W, 0.18 * H
-    bx, by = -0.36 * W, 0.40 * H
-    hz = 0.34 * H
-
-    def project(u, v, h):
-        return (ox + u * ax + v * bx, oy + u * ay + v * by - h * hz)
-
-    for j in range(M - 1):
-        ra, rb = traces[j], traces[j + 1]
-        v0, v1 = j / (M - 1.0), (j + 1) / (M - 1.0)
-        for i in range(N - 1):
-            u0, u1 = i / (N - 1.0), (i + 1) / (N - 1.0)
-            hA, hB = ra[i] / top, ra[i + 1] / top
-            hC, hD = rb[i + 1] / top, rb[i] / top
-            colour = ramp(((hA + hB + hC + hD) * 0.25) ** gamma)
-            quad = [project(u0, v0, hA), project(u1, v0, hB),
-                    project(u1, v1, hC), project(u0, v1, hD)]
-            fill_quad(rows, W, H, quad, colour)
-            # Stroke the edges too: where the surface turns nearly vertical the
-            # scanline fill leaves hairline slivers of whatever was behind.
-            for k in range(4):
-                x0, y0 = quad[k]
-                x1, y1 = quad[(k + 1) % 4]
-                line(rows, W, H, x0, y0, x1, y1, colour, 1.0)
-
-    return png(os.path.join(IMG, "og.png"), W, H, rows)
-
-
 def main():
     os.makedirs(IMG, exist_ok=True)
     print("integrating the Lugiato-Lefever equation ...")
@@ -332,11 +200,6 @@ def main():
     print("  wrote", make_soliton_rule(values))
     print("  wrote", make_favicon(values))
 
-    sim = LLE(n=128, L=20.0, S=2.0, theta=4.0).seed(5, vacancy=3)
-    sim.step(1200)
-    traces = [sim.step(48) for _ in range(64)]
-    print("  og        peak %.2f, %d rows" % (max(max(t) for t in traces), len(traces)))
-    print("  wrote assets/img/og.png (%d bytes)" % make_og(traces))
 
 
 if __name__ == "__main__":

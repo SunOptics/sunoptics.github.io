@@ -1,0 +1,232 @@
+{
+  "hero": {
+    "src": "assets/img/banners/home.png",
+    "w": 1440,
+    "h": 842,
+    "alt": "Three-dimensional surface plot of two multimode solitons of unequal amplitude propagating along a graded-index fibre, colliding, and continuing unchanged — intensity mapped to height and to colour on a black ground.",
+    "caption": "Two multimode solitons colliding in a graded-index fibre."
+  },
+  "figures": [
+    {
+      "id": "noise-pathways",
+      "src": "assets/img/figures/noise-pathways.png",
+      "w": 1280,
+      "h": 446,
+      "title": "Where a soliton's noise comes from, and where it goes",
+      "alt": "Five-panel schematic: a Kerr resonator and its comb; field-level fluctuations; projection onto the four collective coordinates amplitude, frequency, timing and phase; a diagram of the couplings between them; and the resulting RIN, timing phase noise and common-mode phase noise spectra.",
+      "caption": "Field fluctuations are projected onto the four coordinates a soliton actually has — amplitude, frequency, timing, phase — and the couplings between them (amplitude–phase, Raman-assisted transfer, frequency-to-timing conversion) decide the noise you can measure at the output.",
+      "credit": {
+        "text": "APL Photonics (2026), accepted",
+        "href": "https://arxiv.org/abs/2605.14614"
+      }
+    },
+    {
+      "id": "parametric-soliton-crystals",
+      "src": "assets/img/figures/parametric-soliton-crystals.png",
+      "w": 1280,
+      "h": 569,
+      "title": "Soliton crystals and the fluctuations a single pulse carries",
+      "alt": "Left: a parametrically driven Kerr ring with several solitons, and the comb harmonics produced by crystal orderings labelled PPNN, PPPN, PNPN. Right: amplitude, phase and timing fluctuations of one soliton, and the corresponding frequency-shift fluctuation of the comb.",
+      "caption": "n solitons circulating at equal spacing print n free spectral ranges onto the comb, and the phase pattern of the crystal decides which harmonics survive. On the right, the four fluctuations a single pulse carries.",
+      "credit": {
+        "text": "J. Phys. Photon. 8, 03LT01 (2026)",
+        "href": "https://doi.org/10.1088/2515-7647/ae79bf"
+      }
+    },
+    {
+      "id": "cavity-dimensions",
+      "src": "assets/img/figures/cavity-dimensions.png",
+      "w": 1280,
+      "h": 230,
+      "title": "A temporal cavity plus a spatial cavity",
+      "alt": "Three panels: a fibre ring with a phase modulator producing a temporal cavity soliton; a Fabry-Perot cavity with Kerr media producing a spatial soliton; and the two combined into a graded-index spatiotemporal cavity supporting multimode solitons.",
+      "caption": "Confine light in time with dispersion, confine it in space with a graded-index fibre, and do both at once: the result is a multimode cavity soliton, a pulse localized in all three dimensions.",
+      "credit": {
+        "text": "Phys. Rev. Lett. 131, 137201 (2023)",
+        "href": "https://doi.org/10.1103/PhysRevLett.131.137201"
+      }
+    },
+    {
+      "id": "multimode-solitons",
+      "src": "assets/img/figures/multimode-solitons.png",
+      "w": 1280,
+      "h": 246,
+      "title": "What makes a multimode soliton",
+      "alt": "Three panels: a temporal soliton in single-mode fibre balancing chromatic dispersion against nonlinearity; a spatial soliton balancing diffraction against nonlinearity; and a spatiotemporal multimode soliton in a graded-index fibre where chromatic and modal dispersion balance nonlinearity together.",
+      "caption": "A temporal soliton balances dispersion against nonlinearity; a spatial one balances diffraction against it. In a graded-index fibre both happen at once, and modal dispersion joins in.",
+      "credit": {
+        "text": "Photon. Res. 12, 2581 (2024)",
+        "href": "https://doi.org/10.1364/PRJ.531393"
+      }
+    },
+    {
+      "id": "nanolaser-modes",
+      "src": "assets/img/figures/nanolaser-modes.png",
+      "w": 1280,
+      "h": 404,
+      "title": "Why a nanolaser mode-locks at all",
+      "alt": "Left: a free particle in a box compared with a harmonic oscillator, and a Fabry-Perot cavity compared with a chirped distributed Bragg reflector. Right: the equally spaced Hermite-Gaussian modes of the photonic potential, and the resulting pulse circulating in the cavity.",
+      "caption": "A photonic-crystal nanolaser is a harmonic oscillator, not a box. Its Hermite–Gaussian modes are equally spaced in frequency, so they lock — and the pulse period is set by the potential, not by the cavity length.",
+      "credit": {
+        "text": "Phys. Rev. Lett. 123, 233901 (2019)",
+        "href": "https://doi.org/10.1103/PhysRevLett.123.233901"
+      }
+    }
+  ],
+  "videos": [
+    {
+      "id": "atkTpMimGkU",
+      "title": "Parametrically driven Kerr temporal soliton crystals (VIII): three pursuing solitons",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/atkTpMimGkU.jpg",
+      "href": "https://www.youtube.com/watch?v=atkTpMimGkU"
+    },
+    {
+      "id": "-vWOQzNRxHg",
+      "title": "Parametrically driven Kerr soliton crystals (IV): transition from six solitons as the drive is reduced",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/-vWOQzNRxHg.jpg",
+      "href": "https://www.youtube.com/watch?v=-vWOQzNRxHg"
+    },
+    {
+      "id": "QpL-oRu6uGM",
+      "title": "Parametrically driven Kerr temporal soliton crystals (VI): two pursuing solitons",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/QpL-oRu6uGM.jpg",
+      "href": "https://www.youtube.com/watch?v=QpL-oRu6uGM"
+    },
+    {
+      "id": "p08_3cc0Og4",
+      "title": "Bifurcation diagram of parametrically driven Kerr temporal soliton crystals (III)",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/p08_3cc0Og4.jpg",
+      "href": "https://www.youtube.com/watch?v=p08_3cc0Og4"
+    },
+    {
+      "id": "hV5qaBMS-v0",
+      "title": "Radial simulation of a transdimensional soliton in the driven damped nonlinear Schrödinger equation",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/hV5qaBMS-v0.jpg",
+      "href": "https://www.youtube.com/watch?v=hV5qaBMS-v0"
+    },
+    {
+      "id": "txN03Qrn2tk",
+      "title": "Stable 2D soliton in the driven damped nonlinear Schrödinger equation, δ = 1.3",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/txN03Qrn2tk.jpg",
+      "href": "https://www.youtube.com/watch?v=txN03Qrn2tk"
+    },
+    {
+      "id": "q9IdulS_6O8",
+      "title": "Stable 2D soliton breather in the driven damped nonlinear Schrödinger equation, δ = 1.4",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/q9IdulS_6O8.jpg",
+      "href": "https://www.youtube.com/watch?v=q9IdulS_6O8"
+    },
+    {
+      "id": "HF54n4i0Qgc",
+      "title": "Unstable 2D soliton relaxing to a static pattern, δ = 0.9",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/HF54n4i0Qgc.jpg",
+      "href": "https://www.youtube.com/watch?v=HF54n4i0Qgc"
+    },
+    {
+      "id": "4jfRCjd47CY",
+      "title": "Unstable 2D soliton evolving into a pattern, δ = 1.0",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/4jfRCjd47CY.jpg",
+      "href": "https://www.youtube.com/watch?v=4jfRCjd47CY"
+    },
+    {
+      "id": "Ja9K2Pd7rpE",
+      "title": "Time evolution of a spatiotemporal breather",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/Ja9K2Pd7rpE.jpg",
+      "href": "https://www.youtube.com/watch?v=Ja9K2Pd7rpE"
+    },
+    {
+      "id": "8m6zLcjVdes",
+      "title": "Initial stage of the temporal evolution of a light bullet",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/8m6zLcjVdes.jpg",
+      "href": "https://www.youtube.com/watch?v=8m6zLcjVdes"
+    },
+    {
+      "id": "Vhz-yL41sB0",
+      "title": "Chaoticon and soliton",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/Vhz-yL41sB0.jpg",
+      "href": "https://www.youtube.com/watch?v=Vhz-yL41sB0"
+    },
+    {
+      "id": "7fObrzTnA7c",
+      "title": "Symmetric and asymmetric breathers",
+      "group": "cavity",
+      "thumb": "assets/img/thumbs/7fObrzTnA7c.jpg",
+      "href": "https://www.youtube.com/watch?v=7fObrzTnA7c"
+    },
+    {
+      "id": "g7jRTYVUZK8",
+      "title": "Measured output spectra from a 10 m graded-index fibre as the input pulse energy is raised",
+      "group": "fiber",
+      "thumb": "assets/img/thumbs/g7jRTYVUZK8.jpg",
+      "href": "https://www.youtube.com/watch?v=g7jRTYVUZK8"
+    },
+    {
+      "id": "_OSp7mxS1as",
+      "title": "Multimode soliton evolution in a graded-index fibre (5)",
+      "group": "fiber",
+      "thumb": "assets/img/thumbs/_OSp7mxS1as.jpg",
+      "href": "https://www.youtube.com/watch?v=_OSp7mxS1as"
+    },
+    {
+      "id": "pnjt5DG8-Qg",
+      "title": "Multimode soliton evolution in a graded-index fibre (4)",
+      "group": "fiber",
+      "thumb": "assets/img/thumbs/pnjt5DG8-Qg.jpg",
+      "href": "https://www.youtube.com/watch?v=pnjt5DG8-Qg"
+    },
+    {
+      "id": "OYiAq1oJEzc",
+      "title": "Run Rome The Marathon 2024",
+      "group": "travel",
+      "thumb": "assets/img/thumbs/OYiAq1oJEzc.jpg",
+      "href": "https://www.youtube.com/watch?v=OYiAq1oJEzc"
+    },
+    {
+      "id": "zhFmArFooEk",
+      "title": "Aerial views of Mont Blanc and Chamonix",
+      "group": "travel",
+      "thumb": "assets/img/thumbs/zhFmArFooEk.jpg",
+      "href": "https://www.youtube.com/watch?v=zhFmArFooEk"
+    },
+    {
+      "id": "8tvucthlpwg",
+      "title": "Cable cars, San Francisco",
+      "group": "travel",
+      "thumb": "assets/img/thumbs/8tvucthlpwg.jpg",
+      "href": "https://www.youtube.com/watch?v=8tvucthlpwg"
+    },
+    {
+      "id": "FAAG4fu-wTY",
+      "title": "Passing by Alcatraz",
+      "group": "travel",
+      "thumb": "assets/img/thumbs/FAAG4fu-wTY.jpg",
+      "href": "https://www.youtube.com/watch?v=FAAG4fu-wTY"
+    },
+    {
+      "id": "lGcIVs32MHo",
+      "title": "Looking at London from the plane",
+      "group": "travel",
+      "thumb": "assets/img/thumbs/lGcIVs32MHo.jpg",
+      "href": "https://www.youtube.com/watch?v=lGcIVs32MHo"
+    },
+    {
+      "id": "BEYywTXuSAQ",
+      "title": "Driving on Interstate 5",
+      "group": "travel",
+      "thumb": "assets/img/thumbs/BEYywTXuSAQ.jpg",
+      "href": "https://www.youtube.com/watch?v=BEYywTXuSAQ"
+    }
+  ]
+}

@@ -75,6 +75,14 @@
         "sun-2026-photonics-west-coupled-quantum-limited-noise",
         "sun-2026-aims-pathway-resolved-noise-channels",
         "sun-2025-cleo-europe-parametric-soliton-crystal-transition"
+      ],
+      "figures": [
+        "parametric-soliton-crystals",
+        "noise-pathways"
+      ],
+      "videos": [
+        "-vWOQzNRxHg",
+        "atkTpMimGkU"
       ]
     },
     {
@@ -134,6 +142,15 @@
         "sun-2023-photonics-west-light-bullets-breathers-collapse",
         "sun-2022-frequency-comb-chimera-states",
         "sun-2022-nonlinear-photonics-light-bullets-3d-potential"
+      ],
+      "figures": [
+        "cavity-dimensions"
+      ],
+      "videos": [
+        "Ja9K2Pd7rpE",
+        "txN03Qrn2tk",
+        "Vhz-yL41sB0",
+        "7fObrzTnA7c"
       ]
     },
     {
@@ -194,6 +211,13 @@
         "sun-2024-photonics-asia-pure-quartic-spatiotemporal-solitons",
         "sun-2022-cleo-multimode-soliton-interactions-molecules",
         "ferraro-2023-epjwoc-beam-by-beam-kerr-cleanup"
+      ],
+      "figures": [
+        "multimode-solitons"
+      ],
+      "videos": [
+        "g7jRTYVUZK8",
+        "_OSp7mxS1as"
       ]
     },
     {
@@ -229,7 +253,11 @@
         "sun-2019-prl-mode-locking-hermite-gaussian-nanolaser",
         "sun-2019-ieee-ipc-mode-locking-hermite-gaussian",
         "sun-2019-laser-dynamics-symposium-nanolaser-mode-locking"
-      ]
+      ],
+      "figures": [
+        "nanolaser-modes"
+      ],
+      "videos": []
     }
   ]
 }

@@ -561,26 +561,21 @@ sup.ref {
 }
 .linkrow a[target="_blank"]::after { content: " \2197"; font-size: .9em; opacity: .65; }
 
-/* THE PLATE — these surfaces are figures, and a figure of this kind is plotted
-   on black in both themes, exactly as it is in the papers. */
+/* THE PLATE — the hero figure is mounted on black, the way it was drawn.
+   object-fit: contain keeps the whole figure; the ground is the same black as
+   the figure's own, so the band and the plot read as one surface. */
 .figure-frame {
   position: relative;
   background: #000;
-  block-size: clamp(15rem, 30vw, 27rem);
+  block-size: clamp(13rem, 34vw, 30rem);
   border-block: 1px solid var(--rule-strong);
 }
-@media (width < 48rem) { .figure-frame { block-size: clamp(12rem, 46vw, 17rem); } }
-.figure-frame canvas {
-  position: absolute; inset: 0;
-  inline-size: 100%; block-size: 100%;
+.figure-frame img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+  object-position: center;
 }
-/* No canvas, no JavaScript: a ruled field, never an empty box. */
-.figure-frame::before {
-  content: "";
-  position: absolute; inset: 0;
-  background: repeating-linear-gradient(to bottom, #1b1b1b 0 1px, transparent 1px 10px);
-}
-.figure-frame canvas { z-index: 1; }
 
 /* ============================================================================
    PUBLICATIONS — a ruled bibliography, not a wall of cards.
@@ -792,14 +787,21 @@ figure img {
   border-radius: var(--r-2);
   background: var(--surface);
 }
+/* A caption that explains the physics is argument, not data: it is set in the
+   serif. Only the citation that follows it stays in the mono layer. */
 figcaption {
   margin-block-start: var(--s3);
-  font-family: var(--font-mono); font-size: var(--fs-2xs);
-  letter-spacing: var(--tr-mono);
-  line-height: 1.6;
+  max-inline-size: 74ch;
+  font-size: var(--fs-sm);
+  line-height: 1.55;
   color: var(--ink-muted);
 }
-figcaption a { font-size: inherit; }
+figcaption a {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tr-mono);
+  white-space: nowrap;
+}
 
 .placeholder {
   display: grid; place-items: center;
@@ -813,27 +815,78 @@ figcaption a { font-size: inherit; }
 }
 
 /* gallery: live simulations */
-.sim { margin-block: var(--block-y); }
 .section > .wide { grid-column: auto; margin-inline-end: calc(-1 * var(--note)); }
-.sim-stage {
+
+/* ---- figure plates ----------------------------------------------------- */
+.plate { margin-block: var(--block-y); }
+.plate img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-2);
+  background: #fff;
+}
+.plate figcaption strong { color: var(--ink); font-weight: var(--wght-strong); }
+
+/* ---- video facades ------------------------------------------------------
+   A thumbnail we serve ourselves plus a button. Nothing reaches YouTube until
+   the visitor presses play, and the page never carries 22 embedded players. */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--s5) var(--s4);
+  margin: var(--block-y) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.section > .video-grid { grid-column: auto; margin-inline-end: calc(-1 * var(--note)); }
+.video { min-inline-size: 0; }
+.video-play {
   position: relative;
-  aspect-ratio: 16 / 8;
+  display: block;
+  inline-size: 100%;
+  padding: 0;
   border: 1px solid var(--rule-strong);
   border-radius: var(--r-2);
   background: #000;
+  cursor: pointer;
   overflow: hidden;
+  aspect-ratio: 16 / 9;
 }
-.sim-stage canvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }
-.sim-controls {
-  display: flex; flex-wrap: wrap; gap: var(--s3) var(--s5);
-  align-items: center;
-  margin-block-start: var(--s3);
+.video-play img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  transition: opacity var(--dur-2) var(--ease);
 }
-.sim-control { display: flex; align-items: center; gap: var(--s2); }
-.sim-control label { color: var(--ink-faint); }
-.sim-control input[type="range"] { inline-size: 8rem; accent-color: var(--accent); }
-.sim-readout { min-inline-size: 3.2rem; color: var(--ink); }
-
+.video-play:hover img { opacity: .8; }
+.video-cue {
+  position: absolute;
+  inset-block-end: var(--s2); inset-inline-start: var(--s2);
+  display: grid; place-items: center;
+  inline-size: 2rem; block-size: 2rem;
+  border-radius: var(--r-1);
+  background: rgb(0 0 0 / .62);
+  color: #fff;
+  font-size: .7rem;
+  line-height: 1;
+  padding-inline-start: .12em;
+}
+.video-play:hover .video-cue { background: var(--accent); color: var(--on-accent); }
+.video-title {
+  margin: var(--s3) 0 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--ink-muted);
+}
+.video iframe {
+  inline-size: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--r-2);
+  background: #000;
+}
 /* ============================================================================
    ON-THIS-PAGE RAIL
    ============================================================================ */
@@ -890,12 +943,12 @@ figcaption a { font-size: inherit; }
     --font-body: Georgia, "Times New Roman", serif;
   }
   .site-header, .site-footer, .toc, .theme-toggle, .filterbar,
-  .hero-figure, .sim-stage, .sim-controls, .skip { display: none !important; }
+  .hero-figure, .video-grid, .skip { display: none !important; }
   body { font-size: 10.5pt; background: #fff; color: #000; }
   .spine { display: block; padding-inline: 0; }
   .hero { border: 0; padding-block: 0 1rem; }
   .sidenote { float: none; inline-size: auto; margin-inline: 0; }
-  .pub, .news-item, .tl-item, .grant, .thrust { break-inside: avoid; }
+  .pub, .news-item, .tl-item, .grant, .thrust, .plate { break-inside: avoid; }
   h1, h2, h3 { break-after: avoid; }
   a { color: #000; text-decoration: none; }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; color: #444; word-break: break-all; }

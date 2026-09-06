@@ -169,6 +169,46 @@ def check_news(news):
     check("news items")
 
 
+def check_media(media, research):
+    """Every picture on the site is a file in this repository. Nothing is
+    hot-linked to googleusercontent, whose URLs expire."""
+    figs = {f["id"]: f for f in media["figures"]}
+    vids = {v["id"]: v for v in media["videos"]}
+
+    for path in [media["hero"]["src"]] + [f["src"] for f in media["figures"]] \
+            + [v["thumb"] for v in media["videos"]]:
+        full = os.path.join(ROOT, path)
+        if not os.path.exists(full):
+            err("media.json: %s is referenced but not in the repository" % path)
+        elif os.path.getsize(full) < 2000:
+            err("media.json: %s is suspiciously small (%d bytes)"
+                % (path, os.path.getsize(full)))
+    check("%d media files present" % (1 + len(media["figures"]) + len(media["videos"])))
+
+    for f in media["figures"]:
+        if not f.get("alt"):
+            err("media.json: figure %s has no alt text" % f["id"])
+        if not f.get("caption"):
+            err("media.json: figure %s has no caption" % f["id"])
+    if not media["hero"].get("alt"):
+        err("media.json: the hero image has no alt text")
+
+    for v in media["videos"]:
+        if v.get("group") not in ("cavity", "fiber", "travel"):
+            err("media.json: video %s has group %r" % (v["id"], v.get("group")))
+        if not v.get("title"):
+            err("media.json: video %s has no title" % v["id"])
+
+    for s2 in research["strands"]:
+        for fid in s2.get("figures", []):
+            if fid not in figs:
+                err("research.json: strand %s references unknown figure %r" % (s2["id"], fid))
+        for vid in s2.get("videos", []):
+            if vid not in vids:
+                err("research.json: strand %s references unknown video %r" % (s2["id"], vid))
+    check("figure and video references")
+
+
 def check_site(site):
     for path, meta in site["meta"].items():
         t, d = len(meta["title"]), len(meta["desc"])
@@ -242,9 +282,21 @@ def check_built():
                     err("%s: malformed mailto %s" % (page, href))
     check("built pages")
 
+    html_all = ""
+    for page in pages:
+        fp = os.path.join(ROOT, page)
+        if os.path.exists(fp):
+            with open(fp, encoding="utf-8") as fh:
+                html_all += fh.read()
+    if "googleusercontent.com" in html_all or "i.ytimg.com" in html_all:
+        err("the built site still hot-links an image from Google; run "
+            "tools/fetch_google_assets.py and point media.json at the local copy")
+    check("no hot-linked images")
+
     for f in ["assets/css/site.css", "assets/css/fonts.css", "assets/js/site.js",
-              "assets/js/lle.js", "assets/js/surface.js", "assets/js/pubs.js",
-              "assets/img/favicon.svg", "assets/img/og.png", "assets/img/soliton-rule.svg",
+              "assets/js/video.js", "assets/js/pubs.js",
+              "assets/img/favicon.svg", "assets/img/soliton-rule.svg",
+              "assets/img/banners/home.png",
               "sitemap.xml", "robots.txt", "feed.xml", ".nojekyll"]:
         if not os.path.exists(os.path.join(ROOT, f)):
             err("missing file: %s" % f)
@@ -265,6 +317,8 @@ def main():
     check_publications(pubs)
     check_research(load("research.json"), pubs)
     check_news(load("news.json"))
+    research = load("research.json")
+    check_media(load("media.json"), research)
     check_site(load("site.json"))
     check_built()
 

@@ -48,7 +48,7 @@ python3 -m http.server 4173
 | 改研究方向的介绍文字 | `data/research.json` |
 | 改经历、学位、基金、奖项 | `data/cv.json` |
 | 改姓名、职位、邮箱、Scholar/ORCID 链接、SEO 描述 | `data/site.json` |
-| 加图片或视频到 Gallery | `data/gallery.json` |
+| 加图片或视频 | `data/media.json` |
 | 改配色、字号、间距 | `assets/css/site.css` 顶部的 `:root` 变量 |
 
 ### 加一篇论文
@@ -90,30 +90,36 @@ python3 -m http.server 4173
 让搜索引擎知道这个网站、你的 Scholar 主页和 ORCID 是同一个人 —— 重名的 Yifan Sun 不少，
 这一步对搜到你很关键。）
 
-### 首页那张图是什么
+### 图片和视频都在哪
 
-不是视频，也不是图片。是你自己的方程在访客浏览器里被实时求解：
+**全部是本地文件，没有一张是外链。** Google Sites 上那些 `googleusercontent.com` 链接会过期，
+所以 `tools/fetch_google_assets.py` 把它们全下载下来提交进仓库了：
 
-$$\partial_t E = S - (1 + i\theta)E + i|E|^2E + i\,\partial_\tau^2 E$$
+- `assets/img/banners/home.png` —— 首页那张三维孤子曲面，也就是原来 Google 站的 banner。
+  它同时也是分享到 Slack / 微信 / LinkedIn 时显示的卡片图。
+- `assets/img/figures/*.png` —— Research 页那 5 张示意图，已经按内容重命名，
+  分别挂在对应的研究方向下面。
+- `assets/img/thumbs/*.jpg` —— 22 个 YouTube 视频的封面图，自己托管。
 
-`assets/js/lle.js` 用分步傅里叶法（线性 + 驱动项在频域精确积分，克尔项在时域做相位旋转，
-Strang 分裂）解 Lugiato–Lefever 方程，另外还带一个守恒的非线性薛定谔求解器，用来算光纤里的
-孤子碰撞。`assets/js/surface.js` 把连续若干个腔内往返画成三维曲面图 —— 纯黑底、按高度上色、
-无网格线，也就是这类图在论文里本来的画法。那条色标是**逐像素从你自己发表的图里取样**出来的
-（就是 Google Sites 那张 banner），所以新站和旧站是同一种视觉语言。
+**视频是「点了才加载」的。** 页面上先显示我们自己的封面图和一个播放按钮；
+只有访客真的点了播放，才会插入一个 `youtube-nocookie.com` 的播放器。
+这样页面轻得多（22 个内嵌播放器会有好几 MB），而且只来读文字的人不会被 Google 种 cookie。
+逻辑在 `assets/js/video.js`，约 30 行。
 
-曲面从远处朝观看者生长，画完最后一行就停止，之后整个网站不再运行任何动画帧；
-系统设了「减少动态效果」时直接一次性画完，不启动动画。
+要加一张图或一个视频，改 `data/media.json`；要把它挂到某条研究线下面，
+在 `data/research.json` 对应 strand 的 `figures` / `videos` 数组里加上它的 id。
 
-想换首页那张图，改 `tools/build.py` 顶部的 `HERO_SIM`（`kind` 可以是 `"lle"` 或 `"nlse"`）。
+`tools/check.py` 会检查每一个图片文件真的存在、每个 id 都能对上，
+并且构建出来的 HTML 里不含任何 `googleusercontent.com` 或 `i.ytimg.com` 的外链。
 
-`tools/make_assets.py` 是同一套物理的纯 Python 版本，用来离线生成
-`assets/img/soliton-rule.svg`（姓名下方那条细线）、`favicon.svg` 和 `og.png`（分享卡片图）。
-想换图就改参数重跑：
+### 姓名下面那条细线
+
+`assets/img/soliton-rule.svg`，是 `tools/make_assets.py` 用分步傅里叶法解
+Lugiato–Lefever 方程离线生成的一条 |E|² 曲线。favicon 同理。这是构建前生成、提交进仓库的静态
+SVG，网页运行时不做任何计算。想换就改参数重跑：
 
 ```bash
-python3 tools/make_assets.py
-python3 tools/build.py
+python3 tools/make_assets.py && python3 tools/build.py
 ```
 
 ---
@@ -123,13 +129,14 @@ python3 tools/build.py
 ```
 data/            content — the only files you normally edit
 tools/build.py   renders data/ into the pages at the repo root
-tools/make_assets.py   the same physics in pure Python: the SVG rule, favicon and OG image
+tools/make_assets.py   generates the soliton rule and favicon from the physics, offline
+tools/fetch_google_assets.py  one-shot import of the images and thumbnails from the old site
 tools/check.py         lints the data and the built site; run it after build.py
 tools/templates/ the shared HTML shell
 assets/css/      site.css (design tokens first), fonts.css
-assets/js/       lle.js (LLE + NLSE solvers), surface.js (the 3-D figures),
-                 site.js (theme), pubs.js (filter)
+assets/js/       site.js (theme), pubs.js (filter), video.js (click-to-load video)
 assets/fonts/    Newsreader + IBM Plex Mono, self-hosted — no request reaches Google
+assets/img/      banners, figures and video thumbnails, all served from here
 index.html …     generated; do not edit by hand
 ```
 
@@ -142,3 +149,5 @@ index.html …     generated; do not edit by hand
   paths are served as-is.
 - Everything a crawler needs — titles, descriptions, JSON-LD, the publication
   list — is in the served HTML, never assembled by JavaScript.
+- No image is hot-linked. Video players load only on click, from
+  youtube-nocookie.com, so a reader who never presses play is never tracked.

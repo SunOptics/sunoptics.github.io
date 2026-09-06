@@ -280,19 +280,6 @@ def render(site, path, main, scripts="", extra_ld=None, og_type="website"):
 
 # ------------------------------------------------------------------- pages
 
-# A parametrically driven Kerr cavity holding a soliton crystal with one site
-# left empty. The vacancy is not decoration: it is the defect that prints
-# itself on the comb, and the subject of J. Phys. Photon. 8, 03LT01 (2026).
-HERO_SIM = json.dumps({
-    "kind": "lle", "L": 20, "n": 256, "S": 2.0, "detuning": 4.0,
-    "solitons": 5, "vacancy": 3, "rows": 88, "stepsPer": 120,
-}, separators=(",", ":"))
-
-HERO_ALT = ("Three-dimensional surface plot of intracavity intensity over "
-            "successive round trips: four cavity solitons held at equal spacing "
-            "with one lattice site left empty. Integrated live from the "
-            "Lugiato-Lefever equation.")
-
 
 def compute_stats(site, pubs, cv):
     """Derive the hero numbers from the data, so they cannot drift out of date
@@ -318,7 +305,7 @@ def compute_stats(site, pubs, cv):
     return out
 
 
-def hero_html(site, rule_svg):
+def hero_html(site, rule_svg, hero):
     eyebrow = " · ".join([site["role"], site["org"], site["place"]]).upper()
     stats = "".join(
         '<div class="stat"><span class="stat-n">%s</span><span class="caps">%s</span></div>'
@@ -339,12 +326,45 @@ def hero_html(site, rule_svg):
         '<ul class="linkrow">%s</ul>'
         '</div>'
         '<div class="hero-figure"><div class="figure-frame">'
-        '<canvas data-surface=\'%s\' role="img" aria-label="%s"></canvas>'
+        '<img src="/%s" alt="%s" width="%d" height="%d" fetchpriority="high" decoding="async">'
         '</div></div>'
         '</section>'
     ) % (e(eyebrow), e(site["name"]), rule_svg, e(site["thesis"]),
          e(site["tagline"]).replace(" · ", '<span class="sep">·</span>'),
-         stats, "".join(links), HERO_SIM, e(HERO_ALT))
+         stats, "".join(links),
+         e(hero["src"]), e(hero["alt"]), hero["w"], hero["h"])
+
+
+def figure_html(fig, wide=True):
+    credit = ""
+    if fig.get("credit"):
+        credit = ' <a href="%s" rel="noopener">%s</a>' % (
+            e(fig["credit"]["href"]), e(fig["credit"]["text"]))
+    return (
+        '<figure class="plate%s" id="fig-%s">'
+        '<img src="/%s" alt="%s" width="%d" height="%d" loading="lazy" decoding="async">'
+        '<figcaption><strong>%s.</strong> %s%s</figcaption></figure>'
+    ) % (" wide" if wide else "", e(fig["id"]), e(fig["src"]), e(fig["alt"]),
+         fig["w"], fig["h"], e(fig["title"]), e(fig["caption"]), credit)
+
+
+def video_html(v):
+    """A facade, not an embed: the thumbnail is ours and nothing reaches
+    YouTube until the visitor presses play."""
+    return (
+        '<li class="video">'
+        '<button class="video-play" type="button" data-video="%s" data-title="%s">'
+        '<img src="/%s" alt="" width="480" height="360" loading="lazy" decoding="async">'
+        '<span class="video-cue" aria-hidden="true">&#9654;</span>'
+        '<span class="vh">Play: %s</span>'
+        '</button>'
+        '<p class="video-title">%s</p>'
+        '</li>'
+    ) % (e(v["id"]), e(v["title"]), e(v["thumb"]), e(v["title"]), e(v["title"]))
+
+
+def video_grid(videos):
+    return '<ul class="video-grid">%s</ul>' % "".join(video_html(v) for v in videos)
 
 
 def section_head(num, label, title, anchor=None, level=2):
@@ -377,7 +397,7 @@ def news_html(items, limit=None):
     return '<ul class="news">%s</ul>' % "".join(rows)
 
 
-def build_home(site, pubs, news, research, rule_svg):
+def build_home(site, pubs, news, research, rule_svg, media):
     by_id = {p["id"]: p for p in pubs}
     selected = [p for p in pubs if p.get("selected")]
 
@@ -387,7 +407,7 @@ def build_home(site, pubs, news, research, rule_svg):
         for s in research["strands"])
 
     main = (
-        '<div class="spine">' + hero_html(site, rule_svg) + '</div>'
+        '<div class="spine">' + hero_html(site, rule_svg, media["hero"]) + '</div>'
         + '<div class="spine">'
         + '<section class="section">'
         + section_head("01", "Research", "What I work on")
@@ -408,13 +428,13 @@ def build_home(site, pubs, news, research, rule_svg):
         + '</section>'
         + '</div>'
     )
-    scripts = ('<script src="%s" defer></script>' % asset('/assets/js/lle.js')
-               + '<script src="%s" defer></script>' % asset('/assets/js/surface.js'))
-    return render(site, "/", main, scripts, og_type="profile")
+    return render(site, "/", main, og_type="profile")
 
 
-def build_research(site, pubs, research, rule_svg):
+def build_research(site, pubs, research, rule_svg, media):
     by_id = {p["id"]: p for p in pubs}
+    by_fig = {f["id"]: f for f in media["figures"]}
+    by_vid = {v["id"]: v for v in media["videos"]}
     prog = research["programme"]
 
     thrusts = "".join(
@@ -461,6 +481,10 @@ def build_research(site, pubs, research, rule_svg):
         for extra in notes[len(paras):]:
             woven.append(extra.replace('class="sidenote"', 'class="sidenote is-inline"'))
 
+        figs = "".join(figure_html(by_fig[f]) for f in s.get("figures", []) if f in by_fig)
+        vids = [by_vid[v] for v in s.get("videos", []) if v in by_vid]
+        media_block = figs + (video_grid(vids) if vids else "")
+
         strand_pubs = [by_id[pid] for pid in s["pubs"] if pid in by_id]
         strand_pubs.sort(key=lambda p: (-(p.get("year") or 0), p["title"]))
         listing = "".join(pub_html(p, number=str(i + 1), anchor=False)
@@ -471,6 +495,7 @@ def build_research(site, pubs, research, rule_svg):
             + section_head(s["num"], s["era"], s["title"], anchor=s["id"])
             + '<div class="prose"><p class="lede">%s</p>%s</div>' % (
                 e(s["summary"]), "".join(woven))
+            + media_block
             + '<h3 class="caps" style="margin-top:var(--s7)">Publications from this strand</h3>'
             + '<ul class="pub-list">%s</ul>' % listing
             + '</section>')
@@ -487,7 +512,8 @@ def build_research(site, pubs, research, rule_svg):
         + "".join(body)
         + '</div>'
     )
-    return render(site, "/research/", main)
+    return render(site, "/research/", main,
+                  '<script src="%s" defer></script>' % asset('/assets/js/video.js'))
 
 
 TOPIC_LABEL = {
@@ -571,74 +597,38 @@ def build_publications(site, pubs, rule_svg):
     return render(site, "/publications/", main, scripts, extra_ld=ld)
 
 
-def build_gallery(site, gallery, rule_svg):
-    sims = []
-    for i, s in enumerate(gallery["sims"]):
-        cfg = json.dumps({
-            "kind": "lle",
-            "S": s["S"], "detuning": s["detuning"], "solitons": s["solitons"],
-            "vacancy": s.get("vacancy"), "L": s.get("L", 20), "n": 256,
-            "rows": 88, "stepsPer": s.get("stepsPer", 120),
-        }, separators=(",", ":"))
-        alt = ("Three-dimensional surface plot of intracavity intensity over "
-               "successive round trips: %s." % s["title"].lower())
-        sims.append(
-            '<figure class="sim wide"><div class="sim-stage">'
-            '<canvas data-surface=\'%s\' role="img" aria-label="%s"></canvas>'
-            '</div><figcaption><strong>%s.</strong> %s</figcaption></figure>'
-            % (cfg, e(alt), e(s["title"]), e(s["caption"])))
-
-    figures = []
-    for f in gallery["figures"]:
-        src = f["src"]
-        exists = os.path.exists(os.path.join(ROOT, src))
-        if exists:
-            body = '<img src="/%s" alt="%s" loading="lazy" decoding="async">' % (e(src), e(f["alt"]))
-        else:
-            body = ('<div class="placeholder"><p class="caps">Drop the figure at<br>%s</p>'
-                    '<p style="margin-top:var(--s3);font-size:var(--fs-sm)">%s</p></div>'
-                    % (e(src), e(f["alt"])))
-        credit = ""
-        if f.get("credit"):
-            credit = ' <a href="%s" rel="noopener">%s</a>' % (
-                e(f["credit"]["href"]), e(f["credit"]["text"]))
-        figures.append('<figure>%s<figcaption>%s%s</figcaption></figure>'
-                       % (body, e(f["caption"]), credit))
-
-    videos = []
-    for v in gallery["videos"]:
-        if v.get("embed"):
-            body = ('<div style="position:relative;aspect-ratio:16/9">'
-                    '<iframe src="%s" title="%s" loading="lazy" allowfullscreen '
-                    'style="position:absolute;inset:0;width:100%%;height:100%%;border:0"></iframe></div>'
-                    % (e(v["embed"]), e(v["title"])))
-        else:
-            body = ('<div class="placeholder"><p class="caps">%s</p>'
-                    '<p style="margin-top:var(--s3);font-size:var(--fs-sm)">%s</p></div>'
-                    % (e(v["title"]), e(v.get("note") or "")))
-        videos.append('<figure>%s<figcaption>%s</figcaption></figure>' % (body, e(v["title"])))
+def build_gallery(site, media, rule_svg):
+    figs = media["figures"]
+    cavity = [v for v in media["videos"] if v["group"] == "cavity"]
+    fiber = [v for v in media["videos"] if v["group"] == "fiber"]
+    travel = [v for v in media["videos"] if v["group"] == "travel"]
 
     main = (
         '<div class="spine"><section class="section">'
-        + section_head("01", "Live", "Simulations running in your browser", level=1)
-        + '<p class="lede">Each surface below is the Lugiato&ndash;Lefever equation being '
-          'integrated by your own machine as you read &mdash; a split-step Fourier solver '
-          'in about two hundred lines of JavaScript, plotted the way these figures are '
-          'plotted in the papers. Nothing here is a recording.</p>'
-        + "".join(sims)
+        + section_head("01", "Figures", "The pictures behind the papers", level=1)
+        + '<p class="lede">Five schematics that carry most of the argument: what a '
+          'multimode soliton is, what a cavity soliton is, where a soliton&rsquo;s noise '
+          'comes from, and why a nanolaser mode-locks at all.</p>'
+        + "".join(figure_html(f) for f in figs)
         + '</section>' + rule_svg
         + '<section class="section">'
-        + section_head("02", "Figures", "From the papers")
-        + "".join(figures)
+        + section_head("02", "Simulations", "Solitons in motion")
+        + '<p class="lede">Numerical experiments from the cavity work: soliton crystals '
+          'forming and pursuing one another, breathers, chaoticons, and two-dimensional '
+          'solitons losing stability. Nothing loads from YouTube until you press play.</p>'
+        + video_grid(cavity)
+        + '<h3 class="caps" style="margin-top:var(--s8)">In graded-index fibre</h3>'
+        + video_grid(fiber)
         + '</section>'
         + '<section class="section">'
-        + section_head("03", "Video", "Solitons in motion")
-        + "".join(videos)
+        + section_head("03", "Elsewhere", "Away from the desk")
+        + '<p class="lede">Conferences take you places. A marathon in Rome, Mont Blanc '
+          'from the air, and the long drive down Interstate 5.</p>'
+        + video_grid(travel)
         + '</section></div>'
     )
-    scripts = ('<script src="%s" defer></script>' % asset('/assets/js/lle.js')
-               + '<script src="%s" defer></script>' % asset('/assets/js/surface.js'))
-    return render(site, "/gallery/", main, scripts)
+    return render(site, "/gallery/", main,
+                  '<script src="%s" defer></script>' % asset('/assets/js/video.js'))
 
 
 def build_cv(site, cv, pubs, rule_svg):
@@ -790,15 +780,15 @@ def main():
     news = load("news.json")
     research = load("research.json")
     cv = load("cv.json")
-    gallery = load("gallery.json")
+    media = load("media.json")
     rule = load_rule()
     site["_stats"] = compute_stats(site, pubs, cv)
 
     made = [
-        build_home(site, pubs, news, research, rule),
-        build_research(site, pubs, research, rule),
+        build_home(site, pubs, news, research, rule, media),
+        build_research(site, pubs, research, rule, media),
         build_publications(site, pubs, rule),
-        build_gallery(site, gallery, rule),
+        build_gallery(site, media, rule),
         build_cv(site, cv, pubs, rule),
         build_404(site),
         build_sitemap(site),
