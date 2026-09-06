@@ -33,24 +33,6 @@
       "href": "https://arxiv.org/a/0000-0003-0676-8259"
     }
   ],
-  "stats": [
-    {
-      "auto": "papers",
-      "label": "Papers"
-    },
-    {
-      "auto": "talks",
-      "label": "Conference talks"
-    },
-    {
-      "auto": "fellowships",
-      "label": "MSCA fellowships"
-    },
-    {
-      "auto": "awards",
-      "label": "Awards"
-    }
-  ],
   "pages": [
     {
       "href": "/",

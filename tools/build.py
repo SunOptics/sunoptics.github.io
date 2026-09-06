@@ -281,35 +281,8 @@ def render(site, path, main, scripts="", extra_ld=None, og_type="website"):
 # ------------------------------------------------------------------- pages
 
 
-def compute_stats(site, pubs, cv):
-    """Derive the hero numbers from the data, so they cannot drift out of date
-    the moment a paper is added."""
-    counts = {
-        "papers": sum(1 for p in pubs if p["type"] in ("journal", "preprint", "chapter")),
-        "talks": sum(1 for p in pubs if p["type"] == "conference"),
-        "fellowships": sum(1 for g in cv["funding"]["grants"]
-                           if "marie" in g["scheme"].lower() and "supplementary" not in g["scheme"].lower()),
-        "awards": len(cv["awards"]),
-    }
-    out = []
-    for s in site["stats"]:
-        n = s.get("n")
-        if s.get("auto"):
-            if s["auto"] not in counts:
-                raise SystemExit("unknown stat key %r in data/site.json" % s["auto"])
-            n = counts[s["auto"]]
-        label = s["label"]
-        if str(n) == "1" and label.endswith("s"):
-            label = label[:-1]          # "1 Awards" reads wrong
-        out.append({"n": str(n), "label": label})
-    return out
-
-
 def hero_html(site, rule_svg, hero):
     eyebrow = " · ".join([site["role"], site["org"], site["place"]]).upper()
-    stats = "".join(
-        '<div class="stat"><span class="stat-n">%s</span><span class="caps">%s</span></div>'
-        % (e(s["n"]), e(s["label"])) for s in site["_stats"])
     links = ['<li><a href="mailto:%s">Email</a></li>' % e(site["emails"][0]["addr"])]
     for p in site["profiles"]:
         links.append('<li><a href="%s" target="_blank" rel="noopener me">%s</a></li>'
@@ -322,7 +295,6 @@ def hero_html(site, rule_svg, hero):
         '%s'
         '<p class="hero-thesis">%s</p>'
         '<p class="hero-meta caps drule">%s</p>'
-        '<div class="stats">%s</div>'
         '<ul class="linkrow">%s</ul>'
         '</div>'
         '<div class="hero-figure"><div class="figure-frame">'
@@ -331,7 +303,7 @@ def hero_html(site, rule_svg, hero):
         '</section>'
     ) % (e(eyebrow), e(site["name"]), rule_svg, e(site["thesis"]),
          e(site["tagline"]).replace(" · ", '<span class="sep">·</span>'),
-         stats, "".join(links),
+         "".join(links),
          e(hero["src"]), e(hero["alt"]), hero["w"], hero["h"])
 
 
@@ -782,7 +754,6 @@ def main():
     cv = load("cv.json")
     media = load("media.json")
     rule = load_rule()
-    site["_stats"] = compute_stats(site, pubs, cv)
 
     made = [
         build_home(site, pubs, news, research, rule, media),
