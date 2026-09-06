@@ -1,8 +1,8 @@
 {
   "publications": [
     {
-      "id": "sun-2026-apl-photonics-collective-coordinate-fluctuations",
-      "type": "journal",
+      "id": "sun-2026-arxiv-collective-coordinate-fluctuations",
+      "type": "preprint",
       "authors": [
         "Y. Sun",
         "T. Bunel",
@@ -14,7 +14,7 @@
         "F. Leo"
       ],
       "title": "Collective-Coordinate Fluctuations of Driven-Dissipative Solitons",
-      "venue": "APL Photonics",
+      "venue": "arXiv",
       "volume": null,
       "pages": null,
       "year": 2026,
@@ -27,7 +27,35 @@
       "presentation": null,
       "location": null,
       "topic": "noise",
-      "status": "accepted",
+      "status": "preprint",
+      "selected": false,
+      "blurb": null
+    },
+    {
+      "id": "semaan-2026-apl-photonics-raman-gain-cavity-solitons",
+      "type": "journal",
+      "authors": [
+        "G. Semaan",
+        "Y. Sun",
+        "N. Englebert",
+        "S.-P. Gorza",
+        "F. Leo"
+      ],
+      "title": "Cavity solitons in an ultrahigh-effective-Q fiber resonator enabled by Raman gain",
+      "venue": "APL Photonics",
+      "volume": "11",
+      "pages": "081301",
+      "year": 2026,
+      "doi": "10.1063/5.0340179",
+      "arxiv": null,
+      "book": null,
+      "role": "co",
+      "invited": false,
+      "award": null,
+      "presentation": null,
+      "location": null,
+      "topic": "cavity-solitons",
+      "status": "published",
       "selected": false,
       "blurb": null
     },

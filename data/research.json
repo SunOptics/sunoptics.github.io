@@ -59,7 +59,7 @@
         {
           "text": "No collective coordinate fluctuates alone: jitter, phase, and amplitude share pathways, so RIN and timing noise cannot be budgeted separately.",
           "pubs": [
-            "sun-2026-apl-photonics-collective-coordinate-fluctuations",
+            "sun-2026-arxiv-collective-coordinate-fluctuations",
             "sun-2026-aims-pathway-resolved-noise-channels",
             "sun-2026-cleo-quantum-limited-coupled-noise"
           ]
@@ -67,14 +67,15 @@
       ],
       "pubs": [
         "sun-2026-jphys-photonics-parametric-kerr-soliton-crystals",
-        "sun-2026-apl-photonics-collective-coordinate-fluctuations",
+        "sun-2026-arxiv-collective-coordinate-fluctuations",
         "sun-2026-cleo-parametric-soliton-crystal-combs",
         "sun-2026-cleo-phase-coherent-picosecond-pulse-train",
         "sun-2026-cleo-quantum-limited-coupled-noise",
         "sun-2026-photonics-west-soliton-pursuing-dynamics",
         "sun-2026-photonics-west-coupled-quantum-limited-noise",
         "sun-2026-aims-pathway-resolved-noise-channels",
-        "sun-2025-cleo-europe-parametric-soliton-crystal-transition"
+        "sun-2025-cleo-europe-parametric-soliton-crystal-transition",
+        "semaan-2026-apl-photonics-raman-gain-cavity-solitons"
       ],
       "figures": [
         "parametric-soliton-crystals",

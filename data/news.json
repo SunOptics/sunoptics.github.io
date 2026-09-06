@@ -9,11 +9,11 @@
     },
     {
       "date": "2026-08-01",
-      "title": "APL Photonics accepts our paper on soliton collective-coordinate fluctuations",
-      "body": "<em>Collective-Coordinate Fluctuations of Driven-Dissipative Solitons</em> is accepted at APL Photonics, with T. Bunel, F. Bretenaker, S. Coen, S.-P. Gorza and F. Leo.",
+      "title": "Cavity solitons in a Raman-gain fibre resonator, in APL Photonics",
+      "body": "With G. Semaan, N. Englebert, S.-P. Gorza and F. Leo: Raman gain lifts the effective Q of a fibre resonator far enough to sustain cavity solitons.",
       "link": {
-        "href": "https://arxiv.org/abs/2605.14614",
-        "label": "Preprint"
+        "href": "https://doi.org/10.1063/5.0340179",
+        "label": "Read the paper"
       },
       "tag": "paper"
     },
@@ -23,6 +23,16 @@
       "body": "Presented <em>Pathway-Resolved Noise Channels in Temporal Cavity Solitons</em> as an invited talk at the AIMS Conference in Athens, Greece.",
       "link": null,
       "tag": "talk"
+    },
+    {
+      "date": "2026-05-01",
+      "title": "Preprint: collective-coordinate fluctuations of driven-dissipative solitons",
+      "body": "<em>Collective-Coordinate Fluctuations of Driven-Dissipative Solitons</em>, with T. Bunel, S. Glazyrina, G. Semaan, F. Bretenaker, S. Coen, S.-P. Gorza and F. Leo, is on arXiv.",
+      "link": {
+        "href": "https://arxiv.org/abs/2605.14614",
+        "label": "Read the preprint"
+      },
+      "tag": "preprint"
     },
     {
       "date": "2026-05-01",

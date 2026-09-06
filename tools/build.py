@@ -140,6 +140,8 @@ def badges_html(p):
         out += '<span class="badge">%s</span>' % e(p["award"])
     if p.get("status") == "accepted":
         out += '<span class="badge">Accepted</span>'
+    if p.get("status") == "preprint":
+        out += '<span class="badge">Preprint</span>'
     if p.get("status") == "upcoming":
         out += '<span class="badge">Upcoming</span>'
     if p.get("presentation") in ("oral", "poster"):

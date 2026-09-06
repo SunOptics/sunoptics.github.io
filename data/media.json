@@ -16,7 +16,7 @@
       "alt": "Five-panel schematic: a Kerr resonator and its comb; field-level fluctuations; projection onto the four collective coordinates amplitude, frequency, timing and phase; a diagram of the couplings between them; and the resulting RIN, timing phase noise and common-mode phase noise spectra.",
       "caption": "Field fluctuations are projected onto the four coordinates a soliton actually has — amplitude, frequency, timing, phase — and the couplings between them (amplitude–phase, Raman-assisted transfer, frequency-to-timing conversion) decide the noise you can measure at the output.",
       "credit": {
-        "text": "APL Photonics (2026), accepted",
+        "text": "arXiv:2605.14614 (2026)",
         "href": "https://arxiv.org/abs/2605.14614"
       }
     },
