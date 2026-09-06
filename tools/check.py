@@ -175,7 +175,7 @@ def check_media(media, research):
     figs = {f["id"]: f for f in media["figures"]}
     vids = {v["id"]: v for v in media["videos"]}
 
-    for path in [media["hero"]["src"]] + [f["src"] for f in media["figures"]] \
+    for path in [media["share"]["src"]] + [f["src"] for f in media["figures"]] \
             + [v["thumb"] for v in media["videos"]]:
         full = os.path.join(ROOT, path)
         if not os.path.exists(full):
@@ -190,8 +190,8 @@ def check_media(media, research):
             err("media.json: figure %s has no alt text" % f["id"])
         if not f.get("caption"):
             err("media.json: figure %s has no caption" % f["id"])
-    if not media["hero"].get("alt"):
-        err("media.json: the hero image has no alt text")
+    if not media["share"].get("alt"):
+        err("media.json: the share image has no alt text")
 
     for v in media["videos"]:
         if v.get("group") not in ("cavity", "fiber", "travel"):

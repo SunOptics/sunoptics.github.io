@@ -50,6 +50,7 @@ def write(relpath, content):
 
 
 _ASSET_CACHE = {}
+SHARE_IMAGE = [""]   # filled from media.json in main(); the link-preview card
 
 
 def asset(path):
@@ -271,6 +272,7 @@ def render(site, path, main, scripts="", extra_ld=None, og_type="website"):
            .replace("{{MAIN}}", main)
            .replace("{{FOOTER}}", footer_html(site))
            .replace("{{SCRIPTS}}", scripts)
+           .replace("{{OG_IMAGE}}", SHARE_IMAGE[0])
            .replace("{{CSS_FONTS}}", asset("/assets/css/fonts.css"))
            .replace("{{CSS_SITE}}", asset("/assets/css/site.css"))
            .replace("{{JS_SITE}}", asset("/assets/js/site.js")))
@@ -281,7 +283,7 @@ def render(site, path, main, scripts="", extra_ld=None, og_type="website"):
 # ------------------------------------------------------------------- pages
 
 
-def hero_html(site, rule_svg, hero):
+def hero_html(site, rule_svg):
     eyebrow = " · ".join([site["role"], site["org"], site["place"]]).upper()
     links = ['<li><a href="mailto:%s">Email</a></li>' % e(site["emails"][0]["addr"])]
     for p in site["profiles"]:
@@ -297,14 +299,10 @@ def hero_html(site, rule_svg, hero):
         '<p class="hero-meta caps drule">%s</p>'
         '<ul class="linkrow">%s</ul>'
         '</div>'
-        '<div class="hero-figure"><div class="figure-frame">'
-        '<img src="/%s" alt="%s" width="%d" height="%d" fetchpriority="high" decoding="async">'
-        '</div></div>'
         '</section>'
     ) % (e(eyebrow), e(site["name"]), rule_svg, e(site["thesis"]),
          e(site["tagline"]).replace(" · ", '<span class="sep">·</span>'),
-         "".join(links),
-         e(hero["src"]), e(hero["alt"]), hero["w"], hero["h"])
+         "".join(links))
 
 
 def figure_html(fig, wide=True):
@@ -379,7 +377,7 @@ def build_home(site, pubs, news, research, rule_svg, media):
         for s in research["strands"])
 
     main = (
-        '<div class="spine">' + hero_html(site, rule_svg, media["hero"]) + '</div>'
+        '<div class="spine">' + hero_html(site, rule_svg) + '</div>'
         + '<div class="spine">'
         + '<section class="section">'
         + section_head("01", "Research", "What I work on")
@@ -728,7 +726,8 @@ def build_404(site):
               .replace("{{MAIN}}", main)
               .replace("{{FOOTER}}", footer_html(site))
               .replace("{{SCRIPTS}}", "")
-              .replace("{{CSS_FONTS}}", asset("/assets/css/fonts.css"))
+              .replace("{{OG_IMAGE}}", SHARE_IMAGE[0])
+           .replace("{{CSS_FONTS}}", asset("/assets/css/fonts.css"))
               .replace("{{CSS_SITE}}", asset("/assets/css/site.css"))
               .replace("{{JS_SITE}}", asset("/assets/js/site.js")))
     return write("404.html", out)
@@ -753,6 +752,7 @@ def main():
     research = load("research.json")
     cv = load("cv.json")
     media = load("media.json")
+    SHARE_IMAGE[0] = "/" + media["share"]["src"]
     rule = load_rule()
 
     made = [

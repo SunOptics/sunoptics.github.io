@@ -484,16 +484,14 @@ sup.ref {
   grid-template-columns: subgrid;
   background: var(--bg-sunken);
   border-block-start: 3px solid var(--rule-heavy);
-  padding-block-start: var(--s7);
-  row-gap: var(--s7);
+  padding-block: var(--s7);
 }
 @supports not (grid-template-columns: subgrid) {
   .hero { display: block; padding-inline: var(--gutter); }
 }
-@media (width >= 62rem) { .hero { padding-block-start: var(--s8); } }
+@media (width >= 62rem) { .hero { padding-block: var(--s8) var(--s7); } }
 
-.hero-text   { grid-column: rail-start / note-end; grid-row: 1; }
-.hero-figure { grid-column: bleed; grid-row: 2; }
+.hero-text { grid-column: rail-start / note-end; }
 @media (width < 62rem) { .hero-text { grid-column: main; } }
 
 .hero-eyebrow {
@@ -533,22 +531,6 @@ sup.ref {
   letter-spacing: var(--tr-mono);
 }
 .linkrow a[target="_blank"]::after { content: " \2197"; font-size: .9em; opacity: .65; }
-
-/* THE PLATE — the hero figure is mounted on black, the way it was drawn.
-   object-fit: contain keeps the whole figure; the ground is the same black as
-   the figure's own, so the band and the plot read as one surface. */
-.figure-frame {
-  position: relative;
-  background: #000;
-  block-size: clamp(13rem, 34vw, 30rem);
-  border-block: 1px solid var(--rule-strong);
-}
-.figure-frame img {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-  object-position: center;
-}
 
 /* ============================================================================
    PUBLICATIONS — a ruled bibliography, not a wall of cards.
@@ -916,7 +898,7 @@ figcaption a {
     --font-body: Georgia, "Times New Roman", serif;
   }
   .site-header, .site-footer, .toc, .theme-toggle, .filterbar,
-  .hero-figure, .video-grid, .skip { display: none !important; }
+  .video-grid, .skip { display: none !important; }
   body { font-size: 10.5pt; background: #fff; color: #000; }
   .spine { display: block; padding-inline: 0; }
   .hero { border: 0; padding-block: 0 1rem; }

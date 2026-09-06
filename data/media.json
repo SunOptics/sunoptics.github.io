@@ -1,10 +1,10 @@
 {
-  "hero": {
+  "share": {
     "src": "assets/img/banners/home.png",
     "w": 1440,
     "h": 842,
     "alt": "Three-dimensional surface plot of two multimode solitons of unequal amplitude propagating along a graded-index fibre, colliding, and continuing unchanged — intensity mapped to height and to colour on a black ground.",
-    "caption": "Two multimode solitons colliding in a graded-index fibre."
+    "caption": "Shown only as the link-preview card when the site is shared; it does not appear on any page."
   },
   "figures": [
     {
