@@ -1,0 +1,58 @@
+/* ---------------------------------------------------------------------------
+   Self-hosted webfonts. No third-party font host is contacted at runtime:
+   every face below is served from this site's own /assets/fonts/ directory,
+   so no visitor IP is exposed to an external CDN.
+
+   Newsreader ...... variable, axes: opsz 6..72, wght 300..600 (roman + italic)
+   IBM Plex Mono ... static, weights 400 and 500 (roman only)
+
+   Subset: latin only. Both families are licensed under the
+   SIL Open Font License 1.1.
+   --------------------------------------------------------------------------- */
+
+/* Newsreader — variable roman (opsz 6..72, wght 300..600), latin */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('/assets/fonts/newsreader-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Newsreader — variable italic (opsz 6..72, wght 300..600), latin */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('/assets/fonts/newsreader-var-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* IBM Plex Mono — Regular 400, latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/plex-mono-400.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* IBM Plex Mono — Medium 500, latin */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/assets/fonts/plex-mono-500.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Let the browser drive Newsreader's optical-size axis from the rendered
+   font-size. This is the default in modern browsers; stated here explicitly
+   so a global reset cannot silently turn it off. */
+:root {
+  font-optical-sizing: auto;
+}

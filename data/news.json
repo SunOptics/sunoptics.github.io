@@ -1,0 +1,140 @@
+{
+  "news": [
+    {
+      "date": "2026-09-01",
+      "title": "Invited talk at the MathSEE Symposium in Karlsruhe",
+      "body": "Invited to speak at MathSEE 2026 in Karlsruhe, Germany — the second invited talk of the year, after the AIMS Conference in Athens.",
+      "link": null,
+      "tag": "talk"
+    },
+    {
+      "date": "2026-08-01",
+      "title": "APL Photonics accepts our paper on soliton collective-coordinate fluctuations",
+      "body": "<em>Collective-Coordinate Fluctuations of Driven-Dissipative Solitons</em> is accepted at APL Photonics, with T. Bunel, F. Bretenaker, S. Coen, S.-P. Gorza and F. Leo.",
+      "link": {
+        "href": "https://arxiv.org/abs/2605.14614",
+        "label": "Preprint"
+      },
+      "tag": "paper"
+    },
+    {
+      "date": "2026-07-01",
+      "title": "Invited talk on pathway-resolved noise channels at AIMS 2026, Athens",
+      "body": "Presented <em>Pathway-Resolved Noise Channels in Temporal Cavity Solitons</em> as an invited talk at the AIMS Conference in Athens, Greece.",
+      "link": null,
+      "tag": "talk"
+    },
+    {
+      "date": "2026-05-01",
+      "title": "Three contributions at CLEO 2026 in Charlotte",
+      "body": "Two orals, on parametrically driven cavity soliton crystal combs and on phase-coherent picosecond pulse trains at 8 MHz, plus a poster on quantum-limited and coupled soliton noise.",
+      "link": null,
+      "tag": "talk"
+    },
+    {
+      "date": "2026-01-01",
+      "title": "Two talks at Photonics West 2026 in San Francisco",
+      "body": "Talks on soliton-pursuing dynamics and pump-depletion locking in parametrically driven soliton crystals, and on coupled quantum-limited noise channels in temporal cavity solitons.",
+      "link": null,
+      "tag": "talk"
+    },
+    {
+      "date": "2025-11-01",
+      "title": "Parametrically driven Kerr temporal soliton crystals in J. Phys. Photonics",
+      "body": "New paper with C. Dupont, E. K. Akakpo, F. De Lucia, G. Semaan, S.-P. Gorza and F. Leo in <em>Journal of Physics: Photonics</em>.",
+      "link": {
+        "href": "https://doi.org/10.1088/2515-7647/ae79bf",
+        "label": "Read the paper"
+      },
+      "tag": "paper"
+    },
+    {
+      "date": "2025-07-01",
+      "title": "Transdimensional dynamics of Kerr cavity solitons in Physical Review Research",
+      "body": "A Letter with P. Parra-Rivas, F. Leo, C. Milián and S. Wabnitz on how cavity solitons connect across dimensions, in <em>Phys. Rev. Research</em> 7, L032015.",
+      "link": {
+        "href": "https://doi.org/10.1103/k54w-s7lg",
+        "label": "Read the paper"
+      },
+      "tag": "paper"
+    },
+    {
+      "date": "2025-06-01",
+      "title": "Three presentations at CLEO Europe 2025 in Munich",
+      "body": "Orals on the transition from parametrically driven cavity solitons to soliton crystals and on a transdimensional approach to multidimensional solitons, plus a poster on intermodal temporal reflections.",
+      "link": null,
+      "tag": "talk"
+    },
+    {
+      "date": "2025-05-01",
+      "title": "Intermodal all-optical pulse switching in Nanophotonics",
+      "body": "Co-first-author work with A. C. Sparapani, F. Mangini, M. Ferraro, G. P. Agrawal and S. Wabnitz on temporal reflection and refraction in multimode fibres.",
+      "link": {
+        "href": "https://doi.org/10.1515/nanoph-2024-0653",
+        "label": "Read the paper"
+      },
+      "tag": "paper"
+    },
+    {
+      "date": "2024-11-01",
+      "title": "Best Oral Award at the 2024 Advanced Fiber Laser Conference",
+      "body": "The talk <em>Stability of coherently-driven multidimensional cavity solitons</em> received a Best Oral Award at AFL 2024 in Changsha, China.",
+      "link": null,
+      "tag": "award"
+    },
+    {
+      "date": "2024-11-01",
+      "title": "Invited review on multimode solitons in optical fibres in Photonics Research",
+      "body": "An invited review with P. Parra-Rivas, G. P. Agrawal, T. Hansson, C. Antonelli, A. Mecozzi, F. Mangini and S. Wabnitz, in <em>Photon. Res.</em> 12, 2581.",
+      "link": {
+        "href": "https://doi.org/10.1364/PRJ.531393",
+        "label": "Read the review"
+      },
+      "tag": "paper"
+    },
+    {
+      "date": "2024-10-01",
+      "title": "Two orals at Photonics Asia 2024 in Nantong",
+      "body": "Presented a dimension-reduction study of multidimensional solitons in passive Kerr cavities, and pure quartic spatiotemporal solitons in graded-index media.",
+      "link": null,
+      "tag": "talk"
+    },
+    {
+      "date": "2024-07-01",
+      "title": "Invited talk on variational approaches to light bullets at AES 2024",
+      "body": "Invited presentation on variational approaches for characterizing light bullets in nonlinear optics, given at AES 2024 in Rome, Italy.",
+      "link": null,
+      "tag": "talk"
+    },
+    {
+      "date": "2024-06-01",
+      "title": "ENLIGHTENS: second Marie Skłodowska-Curie fellowship starts at ULB",
+      "body": "Started a Marie Skłodowska-Curie Postdoctoral Fellowship (ENLIGHTENS, grant 101149506) at Université libre de Bruxelles, running to May 2026.",
+      "link": {
+        "href": "https://cordis.europa.eu/project/id/101149506",
+        "label": "Project on CORDIS"
+      },
+      "tag": "grant"
+    },
+    {
+      "date": "2023-09-01",
+      "title": "Robust three-dimensional solitons and breathers in Physical Review Letters",
+      "body": "<em>Phys. Rev. Lett.</em> 131, 137201 reports robust high-order 3D solitons and breathers in driven dissipative systems, realized in a Kerr cavity.",
+      "link": {
+        "href": "https://doi.org/10.1103/PhysRevLett.131.137201",
+        "label": "Read the paper"
+      },
+      "tag": "paper"
+    },
+    {
+      "date": "2022-06-01",
+      "title": "BEAMLOCKER: first Marie Skłodowska-Curie fellowship starts at Sapienza",
+      "body": "First Marie Skłodowska-Curie Postdoctoral Fellowship (BEAMLOCKER, grant 101064614) began at Sapienza University of Rome, running June 2022 to May 2024.",
+      "link": {
+        "href": "https://cordis.europa.eu/project/id/101064614",
+        "label": "Project on CORDIS"
+      },
+      "tag": "grant"
+    }
+  ]
+}

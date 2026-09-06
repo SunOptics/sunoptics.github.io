@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESC}}">
+<link rel="canonical" href="{{CANONICAL}}">
+<meta name="author" content="Yifan Sun">
+<meta name="theme-color" content="#FBFAF8">
+
+<!-- Stamp the theme before first paint, or every dark-mode visitor gets a white flash. -->
+<script>
+(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}
+var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',d?'#141311':'#FBFAF8');}catch(e){}})();
+</script>
+
+<link rel="preload" href="/assets/fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/fonts.css">
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/rss+xml" title="Yifan Sun — news" href="/feed.xml">
+
+<meta property="og:type" content="{{OG_TYPE}}">
+<meta property="og:site_name" content="Yifan Sun">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="{{CANONICAL}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESC}}">
+<meta property="og:image" content="{{ORIGIN}}/assets/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{TITLE}}">
+<meta name="twitter:description" content="{{DESC}}">
+<meta name="twitter:image" content="{{ORIGIN}}/assets/img/og.png">
+
+{{JSONLD}}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+{{HEADER}}
+<main id="main">
+{{MAIN}}
+</main>
+{{FOOTER}}
+<script src="/assets/js/site.js" defer></script>
+{{SCRIPTS}}
+</body>
+</html>

@@ -1,0 +1,148 @@
+{
+  "lede": "I am a theorist working on the nonlinear dynamics of driven-dissipative optical systems: cavity solitons and frequency combs, multimode and spatiotemporal light in optical fibres, and the quantum-limited noise that sets the coherence of both. My work combines bifurcation theory, reduced analytical models and large-scale numerics, and is developed in close contact with the experimental groups that build these cavities and fibres.",
+  "positions": [
+    {
+      "from": "2024-06",
+      "to": "2026-05",
+      "role": "Marie Skłodowska-Curie Postdoctoral Fellow",
+      "org": "Université libre de Bruxelles",
+      "place": "Brussels, Belgium",
+      "note": "Second Marie Skłodowska-Curie Postdoctoral Fellowship, on the ENLIGHTENS project"
+    },
+    {
+      "from": "2022-06",
+      "to": "2024-05",
+      "role": "Marie Skłodowska-Curie Postdoctoral Fellow",
+      "org": "Sapienza University of Rome",
+      "place": "Rome, Italy",
+      "note": "First Marie Skłodowska-Curie Postdoctoral Fellowship, on the BEAMLOCKER project"
+    },
+    {
+      "from": "2021-06",
+      "to": "2022-05",
+      "role": "Postdoctoral Researcher",
+      "org": "Sapienza University of Rome",
+      "place": "Rome, Italy",
+      "note": "Supported by a Sapienza Campus Grant on multimode nonlinear fibre optics"
+    }
+  ],
+  "education": [
+    {
+      "from": "2016-10",
+      "to": "2021-05",
+      "degree": "Ph.D.",
+      "org": "University of Paris-Saclay",
+      "place": "Paris, France",
+      "note": "Mode-locking of Hermite-Gaussian modes in harmonic-cavity semiconductor nanolasers, including their dynamics, robustness and noise"
+    },
+    {
+      "from": "2013-09",
+      "to": "2016-06",
+      "degree": "Master's",
+      "org": "University of Electronic Science and Technology of China",
+      "place": "Chengdu, China",
+      "note": "Time-frequency signal representation based on temporal Fourier transformation"
+    },
+    {
+      "from": "2009-09",
+      "to": "2013-06",
+      "degree": "Bachelor's",
+      "org": "Xidian University",
+      "place": "Xi'an, China",
+      "note": null
+    }
+  ],
+  "funding": {
+    "lede": "I have been awarded two consecutive Marie Skłodowska-Curie Postdoctoral Fellowships as sole applicant — BEAMLOCKER (call 2021, Sapienza University of Rome) followed directly by ENLIGHTENS (call 2023, Université libre de Bruxelles) — which is rare: the scheme is highly competitive, each proposal was written and defended by me alone, and the second was won while the first was still running. Together with a Sapienza supplementary Marie Curie award and an earlier Sapienza Campus Grant, this has funded my research continuously since 2021.",
+    "grants": [
+      {
+        "acronym": "ENLIGHTENS",
+        "id": "101149506",
+        "scheme": "Marie Skłodowska-Curie Actions Postdoctoral Fellowship (call 2023)",
+        "from": "2024-06",
+        "to": "2026-05",
+        "host": "Université libre de Bruxelles",
+        "role": "Sole applicant and fellow"
+      },
+      {
+        "acronym": "BEAMLOCKER",
+        "id": "101064614",
+        "scheme": "Marie Skłodowska-Curie Actions Postdoctoral Fellowship (call 2021)",
+        "from": "2022-06",
+        "to": "2024-05",
+        "host": "Sapienza University of Rome",
+        "role": "Sole applicant and fellow"
+      },
+      {
+        "acronym": "EFFILOCKER",
+        "id": null,
+        "scheme": "Sapienza University Supplementary Marie Curie Program (call 2022)",
+        "from": "2023-06",
+        "to": "2024-05",
+        "host": "Sapienza University of Rome",
+        "role": "Sole applicant and principal investigator"
+      },
+      {
+        "acronym": null,
+        "id": null,
+        "scheme": "Sapienza University of Rome Campus Grant (call 2021)",
+        "from": "2021-06",
+        "to": "2022-05",
+        "host": "Sapienza University of Rome",
+        "role": "Sole applicant and principal investigator"
+      }
+    ]
+  },
+  "awards": [
+    {
+      "year": 2024,
+      "title": "Best Oral Presentation",
+      "org": "Advanced Fiber Laser Conference, Changsha, China"
+    }
+  ],
+  "invitedTalks": [
+    {
+      "year": 2026,
+      "title": null,
+      "venue": "MathSEE 2026",
+      "place": "Karlsruhe, Germany",
+      "upcoming": true
+    },
+    {
+      "year": 2026,
+      "title": "Pathway-Resolved Noise Channels in Temporal Cavity Solitons",
+      "venue": "AIMS Conference 2026",
+      "place": "Athens, Greece",
+      "upcoming": true
+    },
+    {
+      "year": 2024,
+      "title": "Variational approaches for light bullet characterisation in nonlinear optics",
+      "venue": "Advanced Electromagnetics Symposium (AES)",
+      "place": "Rome, Italy",
+      "upcoming": false
+    }
+  ],
+  "skills": {
+    "Theory": [
+      "Bifurcation analysis and numerical continuation of localised states, breathers and snaking structures",
+      "Lugiato-Lefever and generalised nonlinear Schrödinger modelling of driven Kerr cavities and fibres",
+      "Variational and collective-coordinate reductions for soliton dynamics and fluctuations",
+      "Quantum-limited noise theory: coupled noise channels and timing/phase jitter of cavity solitons",
+      "Multimode coupled-mode theory and dimensional reduction for spatiotemporal light bullets"
+    ],
+    "Numerics": [
+      "Split-step Fourier and pseudo-spectral solvers for one- to three-dimensional propagation",
+      "Path-following of steady states with linear stability and eigenvalue spectra",
+      "Large-scale spatiotemporal simulation of multimode fibres and parametrically driven cavities",
+      "Stochastic simulation of noise-driven soliton dynamics",
+      "Python, MATLAB and high-performance computing workflows"
+    ],
+    "Collaboration": [
+      "Theory-experiment collaboration with fibre, cavity and integrated-photonics laboratories",
+      "Independent proposal writing and project management, including two Marie Skłodowska-Curie fellowships as sole applicant",
+      "Multi-institution European and international projects across nonlinear and multimode photonics",
+      "Invited review and book-chapter writing, and regular conference presentation"
+    ]
+  }
+}
