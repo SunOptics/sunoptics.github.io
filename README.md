@@ -96,9 +96,16 @@ python3 -m http.server 4173
 
 $$\partial_t E = S - (1 + i\theta)E + i|E|^2E + i\,\partial_\tau^2 E$$
 
-`assets/js/lle.js` 用分步傅里叶法（线性+驱动项在频域精确积分，克尔项在时域做相位旋转，
-Strang 分裂）解 Lugiato–Lefever 方程；`assets/js/waterfall.js` 把连续若干个腔内往返
-画成隐藏线瀑布图。画完一次就停止，之后整个网站不再有任何动画帧。
+`assets/js/lle.js` 用分步傅里叶法（线性 + 驱动项在频域精确积分，克尔项在时域做相位旋转，
+Strang 分裂）解 Lugiato–Lefever 方程，另外还带一个守恒的非线性薛定谔求解器，用来算光纤里的
+孤子碰撞。`assets/js/surface.js` 把连续若干个腔内往返画成三维曲面图 —— 纯黑底、按高度上色、
+无网格线，也就是这类图在论文里本来的画法。那条色标是**逐像素从你自己发表的图里取样**出来的
+（就是 Google Sites 那张 banner），所以新站和旧站是同一种视觉语言。
+
+曲面从远处朝观看者生长，画完最后一行就停止，之后整个网站不再运行任何动画帧；
+系统设了「减少动态效果」时直接一次性画完，不启动动画。
+
+想换首页那张图，改 `tools/build.py` 顶部的 `HERO_SIM`（`kind` 可以是 `"lle"` 或 `"nlse"`）。
 
 `tools/make_assets.py` 是同一套物理的纯 Python 版本，用来离线生成
 `assets/img/soliton-rule.svg`（姓名下方那条细线）、`favicon.svg` 和 `og.png`（分享卡片图）。
@@ -116,10 +123,12 @@ python3 tools/build.py
 ```
 data/            content — the only files you normally edit
 tools/build.py   renders data/ into the pages at the repo root
-tools/make_assets.py   generates the SVG rule, favicon and OG image from the physics
+tools/make_assets.py   the same physics in pure Python: the SVG rule, favicon and OG image
+tools/check.py         lints the data and the built site; run it after build.py
 tools/templates/ the shared HTML shell
 assets/css/      site.css (design tokens first), fonts.css
-assets/js/       lle.js (solver), waterfall.js (figure), site.js (theme), pubs.js (filter)
+assets/js/       lle.js (LLE + NLSE solvers), surface.js (the 3-D figures),
+                 site.js (theme), pubs.js (filter)
 assets/fonts/    Newsreader + IBM Plex Mono, self-hosted — no request reaches Google
 index.html …     generated; do not edit by hand
 ```

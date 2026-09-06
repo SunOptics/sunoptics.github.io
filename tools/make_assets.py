@@ -235,35 +235,89 @@ def make_favicon(values):
     return path
 
 
-def make_og(traces):
+RAMP = [
+    (0, 0, 0), (12, 12, 10), (44, 46, 27), (87, 88, 48), (139, 139, 71),
+    (192, 192, 100), (187, 179, 80), (182, 165, 54), (187, 153, 37),
+    (187, 138, 19), (187, 124, 3), (189, 110, 0), (196, 99, 0), (206, 85, 5),
+    (219, 71, 22), (231, 60, 41), (235, 51, 58), (231, 46, 71), (223, 42, 87),
+    (204, 37, 107), (177, 36, 134), (146, 36, 160), (124, 36, 177),
+    (107, 37, 190), (88, 41, 199), (70, 42, 204), (49, 46, 202), (32, 51, 201),
+    (22, 58, 201), (14, 66, 201), (5, 76, 202), (0, 90, 204), (0, 107, 213),
+    (0, 124, 223),
+]
+
+
+def ramp(t):
+    """Height -> colour, sampled from the author's own published figure."""
+    t = 0.0 if t < 0 else (1.0 if t > 1 else t)
+    f = t * (len(RAMP) - 1)
+    k = min(len(RAMP) - 2, int(f))
+    f -= k
+    a, b = RAMP[k], RAMP[k + 1]
+    return (int(a[0] + (b[0] - a[0]) * f),
+            int(a[1] + (b[1] - a[1]) * f),
+            int(a[2] + (b[2] - a[2]) * f))
+
+
+def fill_quad(rows, W, H, pts, colour):
+    """Scanline fill of a small convex quad. Enough for a surf plot; the cells
+    are only a few pixels across."""
+    ys = [p[1] for p in pts]
+    y0 = max(0, int(math.floor(min(ys))))
+    y1 = min(H - 1, int(math.ceil(max(ys))))
+    n = len(pts)
+    for y in range(y0, y1 + 1):
+        yc = y + 0.5
+        xs = []
+        for i in range(n):
+            ax, ay = pts[i]
+            bx, by = pts[(i + 1) % n]
+            if (ay <= yc < by) or (by <= yc < ay):
+                xs.append(ax + (bx - ax) * (yc - ay) / (by - ay))
+        if len(xs) < 2:
+            continue
+        lo, hi = min(xs), max(xs)
+        x0 = max(0, int(math.floor(lo)))
+        x1 = min(W - 1, int(math.ceil(hi)))
+        row = rows[y]
+        for x in range(x0, x1 + 1):
+            row[x] = colour
+
+
+def make_og(traces, gamma=0.78):
+    """The share image: the same surface the front page draws, rendered here so
+    the card people see in Slack is the same figure."""
     W, H = 1200, 630
-    rows = [[PAPER] * W for _ in range(H)]
-    n = len(traces)
+    rows = [[(0, 0, 0)] * W for _ in range(H)]
+    M = len(traces)
+    N = len(traces[0])
     top = max(max(t) for t in traces)
-    padT, padB, AMP = 0.26 * H, 0.10 * H, 0.22 * H
-    span = H - padT - padB
-    for k, tr in enumerate(traces):
-        base = padT + k * span / (n - 1)
-        alpha = 0.30 + 0.70 * k / (n - 1)
-        # occlude everything below this trace, so it reads as a hidden-line plot
-        for i in range(len(tr)):
-            x = int(round(i * (W - 1) / (len(tr) - 1)))
-            y = int(round(base - (tr[i] / top) * AMP))
-            for yy in range(max(y, 0), H):
-                rows[yy][x] = PAPER
-        prev = None
-        for i, v in enumerate(tr):
-            x = i * (W - 1) / (len(tr) - 1)
-            y = base - (v / top) * AMP
-            if prev:
-                line(rows, W, H, prev[0], prev[1], x, y, LINE, alpha)
-                if v / top > 0.35 and prev[2] > 0.35:
-                    line(rows, W, H, prev[0], prev[1], x, y, PEAK, 1.0)
-                    line(rows, W, H, prev[0], prev[1] + 1, x, y + 1, PEAK, 0.6)
-            prev = (x, y, v / top)
-    for x in range(W):                       # the masthead rule
-        for y in range(0, 4):
-            rows[y][x] = INK
+    ox, oy = 0.44 * W, 0.40 * H
+    ax, ay = 0.50 * W, 0.18 * H
+    bx, by = -0.36 * W, 0.40 * H
+    hz = 0.34 * H
+
+    def project(u, v, h):
+        return (ox + u * ax + v * bx, oy + u * ay + v * by - h * hz)
+
+    for j in range(M - 1):
+        ra, rb = traces[j], traces[j + 1]
+        v0, v1 = j / (M - 1.0), (j + 1) / (M - 1.0)
+        for i in range(N - 1):
+            u0, u1 = i / (N - 1.0), (i + 1) / (N - 1.0)
+            hA, hB = ra[i] / top, ra[i + 1] / top
+            hC, hD = rb[i + 1] / top, rb[i] / top
+            colour = ramp(((hA + hB + hC + hD) * 0.25) ** gamma)
+            quad = [project(u0, v0, hA), project(u1, v0, hB),
+                    project(u1, v1, hC), project(u0, v1, hD)]
+            fill_quad(rows, W, H, quad, colour)
+            # Stroke the edges too: where the surface turns nearly vertical the
+            # scanline fill leaves hairline slivers of whatever was behind.
+            for k in range(4):
+                x0, y0 = quad[k]
+                x1, y1 = quad[(k + 1) % 4]
+                line(rows, W, H, x0, y0, x1, y1, colour, 1.0)
+
     return png(os.path.join(IMG, "og.png"), W, H, rows)
 
 
@@ -278,10 +332,10 @@ def main():
     print("  wrote", make_soliton_rule(values))
     print("  wrote", make_favicon(values))
 
-    sim = LLE(n=256, L=20.0, S=2.5, theta=4.24).seed(3)
+    sim = LLE(n=128, L=20.0, S=2.0, theta=4.0).seed(5, vacancy=3)
     sim.step(1200)
-    traces = [sim.step(60) for _ in range(48)]
-    print("  og        peak %.2f, %d traces" % (max(max(t) for t in traces), len(traces)))
+    traces = [sim.step(48) for _ in range(64)]
+    print("  og        peak %.2f, %d rows" % (max(max(t) for t in traces), len(traces)))
     print("  wrote assets/img/og.png (%d bytes)" % make_og(traces))
 
 

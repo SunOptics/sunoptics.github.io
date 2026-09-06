@@ -473,9 +473,9 @@ sup.ref {
 }
 
 /* ============================================================================
-   HERO — a journal front page whose figure is a real solution of his equation.
-   Text and figure are grid siblings and NEVER overlap, so contrast over the
-   figure stops being a judgement call.
+   HERO — a journal front page: the masthead, then the plate.
+   The figure is a full-bleed band beneath the text, never behind it, so
+   contrast over it is never a judgement call.
    ============================================================================ */
 
 .hero {
@@ -484,30 +484,17 @@ sup.ref {
   grid-template-columns: subgrid;
   background: var(--bg-sunken);
   border-block-start: 3px solid var(--rule-heavy);
-  padding-block: var(--s7) var(--s6);
-  align-items: center;
-  row-gap: var(--s6);
+  padding-block-start: var(--s7);
+  row-gap: var(--s7);
 }
 @supports not (grid-template-columns: subgrid) {
-  .hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    max-inline-size: var(--shell);
-    margin-inline: auto;
-    padding-inline: var(--gutter);
-  }
-  .hero-text, .hero-figure { grid-column: 1; }
+  .hero { display: block; padding-inline: var(--gutter); }
 }
-@media (width >= 62rem) {
-  .hero { min-block-size: min(84svh, 720px); padding-block: var(--s8) var(--s7); }
-}
+@media (width >= 62rem) { .hero { padding-block-start: var(--s8); } }
 
-.hero-text { grid-column: rail-start / main-end; }
-.hero-figure { grid-column: main-end / bleed-end; align-self: stretch; min-width: 0; }
-@media (width < 62rem) {
-  .hero-text   { grid-column: main; }
-  .hero-figure { grid-column: bleed; }
-}
+.hero-text   { grid-column: rail-start / note-end; grid-row: 1; }
+.hero-figure { grid-column: bleed; grid-row: 2; }
+@media (width < 62rem) { .hero-text { grid-column: main; } }
 
 .hero-eyebrow {
   padding-block-end: var(--s3);
@@ -572,23 +559,28 @@ sup.ref {
   font-family: var(--font-mono); font-size: var(--fs-xs);
   letter-spacing: var(--tr-mono);
 }
-.linkrow a[target="_blank"]::after { content: " ↗"; font-size: .9em; opacity: .65; }
+.linkrow a[target="_blank"]::after { content: " \2197"; font-size: .9em; opacity: .65; }
 
-/* the canvas figure */
+/* THE PLATE — these surfaces are figures, and a figure of this kind is plotted
+   on black in both themes, exactly as it is in the papers. */
 .figure-frame {
   position: relative;
-  block-size: 100%;
-  min-block-size: 10rem;
-  /* Never an empty box: a ruled field if canvas or JS is unavailable. */
-  background: repeating-linear-gradient(
-    to bottom, var(--rule) 0 1px, transparent 1px 9px);
+  background: #000;
+  block-size: clamp(15rem, 30vw, 27rem);
+  border-block: 1px solid var(--rule-strong);
 }
-@media (width < 62rem) { .figure-frame { min-block-size: 10rem; max-block-size: 12rem; } }
+@media (width < 48rem) { .figure-frame { block-size: clamp(12rem, 46vw, 17rem); } }
 .figure-frame canvas {
   position: absolute; inset: 0;
   inline-size: 100%; block-size: 100%;
-  background: var(--fig-ground);
 }
+/* No canvas, no JavaScript: a ruled field, never an empty box. */
+.figure-frame::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(to bottom, #1b1b1b 0 1px, transparent 1px 10px);
+}
+.figure-frame canvas { z-index: 1; }
 
 /* ============================================================================
    PUBLICATIONS — a ruled bibliography, not a wall of cards.
@@ -795,7 +787,7 @@ sup.ref {
 .thrust dd { margin: 0; font-size: var(--fs-sm); color: var(--ink-muted); }
 
 figure { margin: var(--block-y) 0; }
-figure img, figure .figure-frame {
+figure img {
   border: 1px solid var(--rule);
   border-radius: var(--r-2);
   background: var(--surface);
@@ -825,10 +817,10 @@ figcaption a { font-size: inherit; }
 .section > .wide { grid-column: auto; margin-inline-end: calc(-1 * var(--note)); }
 .sim-stage {
   position: relative;
-  aspect-ratio: 16 / 7;
-  border: 1px solid var(--rule);
+  aspect-ratio: 16 / 8;
+  border: 1px solid var(--rule-strong);
   border-radius: var(--r-2);
-  background: var(--fig-ground);
+  background: #000;
   overflow: hidden;
 }
 .sim-stage canvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; }

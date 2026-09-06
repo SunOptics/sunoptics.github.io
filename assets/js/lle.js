@@ -186,5 +186,96 @@
     return this.intensity;
   };
 
+  /* ---- conservative NLSE, for soliton collisions in a fibre ----------------
+     i dA/dz + (1/2) d^2A/dtau^2 + |A|^2 A = 0
+     Same split-step machinery, no drive and no loss: this is the propagation
+     problem, not the cavity problem. ------------------------------------- */
+
+  function NLSE(opts) {
+    opts = opts || {};
+    this.n = opts.n || 256;
+    this.L = opts.L || 40;
+    this.dz = opts.dz || 2e-3;
+
+    var n = this.n;
+    this.re = new Float64Array(n);
+    this.im = new Float64Array(n);
+    this.wr = new Float64Array(n);
+    this.wi = new Float64Array(n);
+    this.intensity = new Float64Array(n);
+    this._lr = new Float64Array(n);
+    this._li = new Float64Array(n);
+
+    var dw = 2 * Math.PI / this.L, k, om;
+    for (k = 0; k < n; k++) {
+      om = dw * (k < n / 2 ? k : k - n);
+      // exp(-i w^2 dz / 2)
+      var ph = -0.5 * om * om * this.dz;
+      this._lr[k] = Math.cos(ph);
+      this._li[k] = Math.sin(ph);
+    }
+    this.solitons(opts.solitons || []);
+  }
+
+  /* Each entry: {eta, tau, v, phase} — amplitude, position, velocity, phase. */
+  NLSE.prototype.solitons = function (list) {
+    var n = this.n, L = this.L, i, s, t, a, ph;
+    for (i = 0; i < n; i++) { this.re[i] = 0; this.im[i] = 0; }
+    for (s = 0; s < list.length; s++) {
+      var so = list[s];
+      for (i = 0; i < n; i++) {
+        t = -L / 2 + L * i / n - (so.tau || 0);
+        a = (so.eta || 1) / Math.cosh((so.eta || 1) * t);
+        ph = (so.v || 0) * t + (so.phase || 0);
+        this.re[i] += a * Math.cos(ph);
+        this.im[i] += a * Math.sin(ph);
+      }
+    }
+    return this;
+  };
+
+  NLSE.prototype.step = function (steps) {
+    var n = this.n, dz = this.dz, half = dz / 2;
+    var re = this.re, im = this.im, wr = this.wr, wi = this.wi;
+    var s, i, k, p, c, sn, r;
+
+    for (s = 0; s < (steps || 1); s++) {
+      for (i = 0; i < n; i++) {
+        p = (re[i] * re[i] + im[i] * im[i]) * half;
+        c = Math.cos(p); sn = Math.sin(p);
+        r = re[i] * c - im[i] * sn;
+        im[i] = re[i] * sn + im[i] * c;
+        re[i] = r;
+      }
+      wr.set(re); wi.set(im);
+      fft(wr, wi, false);
+      for (k = 0; k < n; k++) {
+        r = wr[k] * this._lr[k] - wi[k] * this._li[k];
+        wi[k] = wr[k] * this._li[k] + wi[k] * this._lr[k];
+        wr[k] = r;
+      }
+      fft(wr, wi, true);
+      re.set(wr); im.set(wi);
+      for (i = 0; i < n; i++) {
+        p = (re[i] * re[i] + im[i] * im[i]) * half;
+        c = Math.cos(p); sn = Math.sin(p);
+        r = re[i] * c - im[i] * sn;
+        im[i] = re[i] * sn + im[i] * c;
+        re[i] = r;
+      }
+    }
+
+    var peak = 0;
+    for (i = 0; i < n; i++) {
+      var v = re[i] * re[i] + im[i] * im[i];
+      this.intensity[i] = v;
+      if (v > peak) peak = v;
+    }
+    this.peak = peak;
+    return this.intensity;
+  };
+
   global.LLE = LLE;
+  global.NLSE = NLSE;
+  global.fftInPlace = fft;
 })(window);

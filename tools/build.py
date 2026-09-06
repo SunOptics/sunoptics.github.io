@@ -11,6 +11,7 @@ Google Scholar's crawler and every link unfurler read the bytes, not the DOM.
 To add a paper: edit data/publications.json and run this script.
 """
 
+import hashlib
 import html
 import json
 import os
@@ -46,6 +47,20 @@ def write(relpath, content):
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(content)
     return relpath
+
+
+_ASSET_CACHE = {}
+
+
+def asset(path):
+    """Append a short content hash to a stylesheet or script URL. Without it a
+    returning visitor keeps last month's CSS against this month's markup."""
+    if path not in _ASSET_CACHE:
+        full = os.path.join(ROOT, path.lstrip("/"))
+        with open(full, "rb") as fh:
+            digest = hashlib.sha256(fh.read()).hexdigest()[:8]
+        _ASSET_CACHE[path] = "%s?v=%s" % (path, digest)
+    return _ASSET_CACHE[path]
 
 
 def ym(value):
@@ -198,9 +213,10 @@ def footer_html(site):
         '<div class="footer-block"><h2>Pages</h2><ul class="footer-list">%s</ul></div>'
         '</div>'
         '<p class="colophon">%s · %s. '
-        'Hand-written HTML and CSS, generated from JSON by a 400-line Python script; '
-        'no framework and no build service. The figure on the front page is the '
-        'Lugiato&ndash;Lefever equation being integrated in your browser, not a video. '
+        'Hand-written HTML and CSS, generated from JSON by a Python script; no framework '
+        'and no build service. The surfaces on this site are the nonlinear '
+        'Schr&ouml;dinger and Lugiato&ndash;Lefever equations being integrated in your '
+        'browser as you read, not videos. '
         '&copy; <span data-year>%s</span> Yifan Sun.</p>'
         '</div></footer>'
     ) % (mails, profiles, pages, e(site["org"]), e(site["place"]), date.today().year)
@@ -254,15 +270,28 @@ def render(site, path, main, scripts="", extra_ld=None, og_type="website"):
            .replace("{{HEADER}}", header_html(site, path))
            .replace("{{MAIN}}", main)
            .replace("{{FOOTER}}", footer_html(site))
-           .replace("{{SCRIPTS}}", scripts))
+           .replace("{{SCRIPTS}}", scripts)
+           .replace("{{CSS_FONTS}}", asset("/assets/css/fonts.css"))
+           .replace("{{CSS_SITE}}", asset("/assets/css/site.css"))
+           .replace("{{JS_SITE}}", asset("/assets/js/site.js")))
     rel = "index.html" if path == "/" else path.strip("/") + "/index.html"
     return write(rel, out)
 
 
 # ------------------------------------------------------------------- pages
 
-HERO_SIM = ('{"S":2.5,"detuning":4.24,"solitons":3,"L":20,"n":256,'
-            '"traces":56,"stepsPer":110,"amp":0.20}')
+# A parametrically driven Kerr cavity holding a soliton crystal with one site
+# left empty. The vacancy is not decoration: it is the defect that prints
+# itself on the comb, and the subject of J. Phys. Photon. 8, 03LT01 (2026).
+HERO_SIM = json.dumps({
+    "kind": "lle", "L": 20, "n": 256, "S": 2.0, "detuning": 4.0,
+    "solitons": 5, "vacancy": 3, "rows": 88, "stepsPer": 120,
+}, separators=(",", ":"))
+
+HERO_ALT = ("Three-dimensional surface plot of intracavity intensity over "
+            "successive round trips: four cavity solitons held at equal spacing "
+            "with one lattice site left empty. Integrated live from the "
+            "Lugiato-Lefever equation.")
 
 
 def compute_stats(site, pubs, cv):
@@ -310,14 +339,12 @@ def hero_html(site, rule_svg):
         '<ul class="linkrow">%s</ul>'
         '</div>'
         '<div class="hero-figure"><div class="figure-frame">'
-        '<canvas data-waterfall=\'%s\' role="img" aria-label="Waterfall plot: three '
-        'cavity solitons breathing over fifty-six resonator round trips, from a live '
-        'split-step simulation of the Lugiato-Lefever equation."></canvas>'
+        '<canvas data-surface=\'%s\' role="img" aria-label="%s"></canvas>'
         '</div></div>'
         '</section>'
     ) % (e(eyebrow), e(site["name"]), rule_svg, e(site["thesis"]),
          e(site["tagline"]).replace(" · ", '<span class="sep">·</span>'),
-         stats, "".join(links), HERO_SIM)
+         stats, "".join(links), HERO_SIM, e(HERO_ALT))
 
 
 def section_head(num, label, title, anchor=None, level=2):
@@ -381,8 +408,8 @@ def build_home(site, pubs, news, research, rule_svg):
         + '</section>'
         + '</div>'
     )
-    scripts = ('<script src="/assets/js/lle.js" defer></script>'
-               '<script src="/assets/js/waterfall.js" defer></script>')
+    scripts = ('<script src="%s" defer></script>' % asset('/assets/js/lle.js')
+               + '<script src="%s" defer></script>' % asset('/assets/js/surface.js'))
     return render(site, "/", main, scripts, og_type="profile")
 
 
@@ -548,15 +575,18 @@ def build_gallery(site, gallery, rule_svg):
     sims = []
     for i, s in enumerate(gallery["sims"]):
         cfg = json.dumps({
+            "kind": "lle",
             "S": s["S"], "detuning": s["detuning"], "solitons": s["solitons"],
             "vacancy": s.get("vacancy"), "L": s.get("L", 20), "n": 256,
-            "traces": 64, "stepsPer": s.get("stepsPer", 140), "amp": 0.2,
+            "rows": 88, "stepsPer": s.get("stepsPer", 120),
         }, separators=(",", ":"))
+        alt = ("Three-dimensional surface plot of intracavity intensity over "
+               "successive round trips: %s." % s["title"].lower())
         sims.append(
             '<figure class="sim wide"><div class="sim-stage">'
-            '<canvas data-waterfall=\'%s\' role="img" aria-label="%s"></canvas>'
+            '<canvas data-surface=\'%s\' role="img" aria-label="%s"></canvas>'
             '</div><figcaption><strong>%s.</strong> %s</figcaption></figure>'
-            % (cfg, e(s["title"]), e(s["title"]), e(s["caption"])))
+            % (cfg, e(alt), e(s["title"]), e(s["caption"])))
 
     figures = []
     for f in gallery["figures"]:
@@ -591,9 +621,10 @@ def build_gallery(site, gallery, rule_svg):
     main = (
         '<div class="spine"><section class="section">'
         + section_head("01", "Live", "Simulations running in your browser", level=1)
-        + '<p class="lede">Each panel below is the Lugiato&ndash;Lefever equation being '
-          'integrated by your own machine &mdash; a split-step Fourier solver in about '
-          'two hundred lines of JavaScript. Nothing here is a recording.</p>'
+        + '<p class="lede">Each surface below is the Lugiato&ndash;Lefever equation being '
+          'integrated by your own machine as you read &mdash; a split-step Fourier solver '
+          'in about two hundred lines of JavaScript, plotted the way these figures are '
+          'plotted in the papers. Nothing here is a recording.</p>'
         + "".join(sims)
         + '</section>' + rule_svg
         + '<section class="section">'
@@ -605,8 +636,8 @@ def build_gallery(site, gallery, rule_svg):
         + "".join(videos)
         + '</section></div>'
     )
-    scripts = ('<script src="/assets/js/lle.js" defer></script>'
-               '<script src="/assets/js/waterfall.js" defer></script>')
+    scripts = ('<script src="%s" defer></script>' % asset('/assets/js/lle.js')
+               + '<script src="%s" defer></script>' % asset('/assets/js/surface.js'))
     return render(site, "/gallery/", main, scripts)
 
 
@@ -734,7 +765,10 @@ def build_404(site):
               .replace("{{HEADER}}", header_html(site, "/404"))
               .replace("{{MAIN}}", main)
               .replace("{{FOOTER}}", footer_html(site))
-              .replace("{{SCRIPTS}}", ""))
+              .replace("{{SCRIPTS}}", "")
+              .replace("{{CSS_FONTS}}", asset("/assets/css/fonts.css"))
+              .replace("{{CSS_SITE}}", asset("/assets/css/site.css"))
+              .replace("{{JS_SITE}}", asset("/assets/js/site.js")))
     return write("404.html", out)
 
 

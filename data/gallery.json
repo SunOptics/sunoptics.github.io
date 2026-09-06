@@ -3,11 +3,13 @@
     {
       "id": "crystal",
       "title": "Soliton crystal with a vacancy",
-      "caption": "Five pulses of light circle the ring at equal spacing, held apart by the ripples each one leaves behind. One site is deliberately left empty, and that vacancy prints itself as a fingerprint on the output spectrum.",
+      "caption": "Six pulses of light circle the ring at equal spacing, held apart by the ripples each one leaves behind. A seventh site is deliberately left empty, and that vacancy prints itself as a fingerprint on the output spectrum.",
       "S": 2.0,
       "detuning": 4.0,
-      "solitons": 5,
-      "vacancy": 3
+      "solitons": 7,
+      "vacancy": 2,
+      "L": 28,
+      "stepsPer": 130
     },
     {
       "id": "breather",
@@ -16,7 +18,8 @@
       "S": 2.5,
       "detuning": 4.24,
       "solitons": 5,
-      "vacancy": null
+      "vacancy": null,
+      "stepsPer": 30
     },
     {
       "id": "single",

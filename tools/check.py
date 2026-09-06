@@ -53,6 +53,7 @@ class IdCollector(HTMLParser):
         HTMLParser.__init__(self)
         self.ids = []
         self.hrefs = []
+        self.assets = []
         self.imgs_without_alt = 0
         self.headings = []
 
@@ -62,6 +63,10 @@ class IdCollector(HTMLParser):
             self.ids.append(a["id"])
         if tag == "a" and "href" in a:
             self.hrefs.append(a["href"])
+        if tag == "link" and a.get("href", "").startswith("/"):
+            self.assets.append(a["href"])
+        if tag == "script" and a.get("src", "").startswith("/"):
+            self.assets.append(a["src"])
         if tag == "img" and "alt" not in a:
             self.imgs_without_alt += 1
         if tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
@@ -214,6 +219,12 @@ def check_built():
         for ph in set(re.findall(r"\{\{[A-Z_]+\}\}", html)):
             err("%s: unreplaced template placeholder %s" % (page, ph))
 
+        for ref in c.assets:
+            # content-hashed URLs carry a ?v= query that is not part of the path
+            target = ref.split("?")[0].lstrip("/")
+            if not os.path.exists(os.path.join(ROOT, target)):
+                err("%s: references %s, which does not exist" % (page, ref))
+
         for href in c.hrefs:
             if href.startswith("#"):
                 if href[1:] and href[1:] not in all_ids[page]:
@@ -232,7 +243,7 @@ def check_built():
     check("built pages")
 
     for f in ["assets/css/site.css", "assets/css/fonts.css", "assets/js/site.js",
-              "assets/js/lle.js", "assets/js/waterfall.js", "assets/js/pubs.js",
+              "assets/js/lle.js", "assets/js/surface.js", "assets/js/pubs.js",
               "assets/img/favicon.svg", "assets/img/og.png", "assets/img/soliton-rule.svg",
               "sitemap.xml", "robots.txt", "feed.xml", ".nojekyll"]:
         if not os.path.exists(os.path.join(ROOT, f)):
