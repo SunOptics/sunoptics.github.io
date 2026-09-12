@@ -7,17 +7,16 @@
 <meta name="description" content="{{DESC}}">
 <link rel="canonical" href="{{CANONICAL}}">
 <meta name="author" content="Yifan Sun">
-<meta name="theme-color" content="#FBFAF8">
+<meta name="theme-color" content="#ffffff">
 
 <!-- Stamp the theme before first paint, or every dark-mode visitor gets a white flash. -->
 <script>
 (function(){try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}
 var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
-var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',d?'#141311':'#FBFAF8');}catch(e){}})();
+var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',d?'#15181d':'#ffffff');}catch(e){}})();
 </script>
 
-<link rel="preload" href="/assets/fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/plex-mono-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/roboto-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{{CSS_FONTS}}">
 <link rel="stylesheet" href="{{CSS_SITE}}">
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">

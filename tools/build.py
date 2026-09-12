@@ -166,7 +166,7 @@ def pub_html(p, number=None, blurb=False, anchor=True, level=3):
         href = "https://doi.org/%s" % p["doi"]
     elif p.get("arxiv"):
         href = "https://arxiv.org/abs/%s" % p["arxiv"]
-    title = e(p["title"])
+    title = e(p.get("title") or p.get("venue") or "Conference presentation")
     title_html = '<a href="%s" rel="noopener">%s</a>' % (e(href), title) if href else title
     num = '<div class="pub-n m">%s</div>' % (e(number) if number is not None else "")
     blurb_html = ('<p class="pub-blurb">%s</p>' % e(p["blurb"])) if (blurb and p.get("blurb")) else ""
@@ -205,24 +205,18 @@ def footer_html(site):
     profiles = "".join(
         '<li><a href="%s" rel="noopener me">%s</a></li>' % (e(p["href"]), e(p["label"]))
         for p in site["profiles"])
-    pages = "".join(
-        '<li><a href="%s">%s</a></li>' % (e(p["href"]), e(p["label"]))
-        for p in site["pages"])
     return (
         '<footer class="site-footer"><div class="spine">'
         '<div class="footer-inner">'
+        '<div class="footer-block footer-identity"><h2>%s</h2><p>%s</p></div>'
         '<div class="footer-block"><h2>Contact</h2><ul class="footer-list">%s</ul></div>'
-        '<div class="footer-block"><h2>Profiles</h2><ul class="footer-list">%s</ul></div>'
-        '<div class="footer-block"><h2>Pages</h2><ul class="footer-list">%s</ul></div>'
+        '<div class="footer-block"><h2>Elsewhere</h2><ul class="footer-list">%s</ul></div>'
         '</div>'
-        '<p class="colophon">%s · %s. '
-        'Hand-written HTML and CSS, generated from JSON by a Python script; no framework '
-        'and no build service. The surfaces on this site are the nonlinear '
-        'Schr&ouml;dinger and Lugiato&ndash;Lefever equations being integrated in your '
-        'browser as you read, not videos. '
-        '&copy; <span data-year>%s</span> Yifan Sun.</p>'
+        '<div class="colophon"><span>&copy; <span data-year>%s</span> %s</span>'
+        '<span>%s · <a href="/feed.xml">News RSS</a></span></div>'
         '</div></footer>'
-    ) % (mails, profiles, pages, e(site["org"]), e(site["place"]), date.today().year)
+    ) % (e(site["name"]), e(site["tagline"]), mails, profiles,
+         date.today().year, e(site["name"]), e(site["place"]))
 
 
 def jsonld(site, extra=None):
@@ -285,26 +279,29 @@ def render(site, path, main, scripts="", extra_ld=None, og_type="website"):
 # ------------------------------------------------------------------- pages
 
 
-def hero_html(site, rule_svg):
-    eyebrow = " · ".join([site["role"], site["org"], site["place"]]).upper()
+def hero_html(site, media):
     links = ['<li><a href="mailto:%s">Email</a></li>' % e(site["emails"][0]["addr"])]
     for p in site["profiles"]:
         links.append('<li><a href="%s" target="_blank" rel="noopener me">%s</a></li>'
                      % (e(p["href"]), e(p["label"])))
+    fig = media["share"]
     return (
-        '<section class="hero">'
+        '<section class="hero" aria-labelledby="intro-name">'
         '<div class="hero-text">'
-        '<p class="hero-eyebrow caps">%s</p>'
-        '<h1 class="hero-name">%s</h1>'
-        '%s'
+        '<p class="hero-eyebrow">Nonlinear photonics &amp; soliton dynamics</p>'
+        '<h1 class="hero-name" id="intro-name">%s</h1>'
+        '<p class="hero-role">%s</p>'
+        '<p class="hero-affiliation">%s</p>'
         '<p class="hero-thesis">%s</p>'
-        '<p class="hero-meta caps drule">%s</p>'
         '<ul class="linkrow">%s</ul>'
         '</div>'
-        '</section>'
-    ) % (e(eyebrow), e(site["name"]), rule_svg, e(site["thesis"]),
-         e(site["tagline"]).replace(" · ", '<span class="sep">·</span>'),
-         "".join(links))
+        '<figure class="hero-figure">'
+        '<a href="/research/#high-dimensional-fiber-solitons" aria-label="Explore research on multimode solitons">'
+        '<img src="/%s" alt="%s" width="%d" height="%d" fetchpriority="high" decoding="async"></a>'
+        '<figcaption><strong>Soliton dynamics</strong>Two pulses meet, interact and keep their shape.</figcaption>'
+        '</figure></section>'
+    ) % (e(site["name"]), e(site["role"]), e(site["org"]), e(site["thesis"]),
+         "".join(links), e(fig["src"]), e(fig["alt"]), fig["w"], fig["h"])
 
 
 def figure_html(fig, wide=True):
@@ -345,11 +342,10 @@ def section_head(num, label, title, anchor=None, level=2):
     idattr = ' id="%s"' % e(anchor) if anchor else ""
     return (
         '<div class="section-head">'
-        '<div class="section-label caps"><span class="section-num">§&nbsp;%s</span>'
-        '<span>%s</span></div>'
+        '<div class="section-label caps">%s</div>'
         '<h%d class="section-title"%s>%s</h%d>'
         '</div>'
-    ) % (e(num), e(label), level, idattr, e(title), level)
+    ) % (e(label), level, idattr, e(title), level)
 
 
 def news_html(items, limit=None):
@@ -370,35 +366,32 @@ def news_html(items, limit=None):
 
 
 def build_home(site, pubs, news, research, rule_svg, media):
-    by_id = {p["id"]: p for p in pubs}
     selected = [p for p in pubs if p.get("selected")]
-
     strands = "".join(
-        '<li class="thrust"><h3>%s</h3><p class="tl-note">%s</p>'
-        '<p class="caps">%s</p></li>' % (e(s["title"]), e(s["summary"]), e(s["era"]))
-        for s in research["strands"])
-
+        '<li class="research-item"><h3><a href="/research/#%s">%s</a></h3><p>%s</p></li>'
+        % (e(s["id"]), e(s["title"]), e(s["summary"])) for s in research["strands"])
+    archive = news["news"][3:]
     main = (
-        '<div class="spine">' + hero_html(site, rule_svg) + '</div>'
-        + '<div class="spine">'
-        + '<section class="section">'
-        + section_head("01", "Research", "What I work on")
-        + '<div class="prose"><p class="lede">%s</p>%s</div>' % (
-            e(research["programme"]["lede"]), "".join(research["programme"]["body"]))
-        + '<ul class="thrusts">%s</ul>' % strands
-        + '<p style="margin-top:var(--s5)"><a href="/research/">Read the full research programme</a></p>'
+        '<div class="spine home">' + hero_html(site, media)
+        + '<section class="section" aria-labelledby="research">'
+        + '<div class="section-intro"><h2 id="research">Research interests</h2>'
+          '<a class="text-link" href="/research/">Explore research</a></div>'
+        + '<p class="lede">%s</p>' % e(research["programme"]["lede"])
+        + '<ul class="research-grid">%s</ul>' % strands
         + '</section>'
-        + '<section class="section">'
-        + section_head("02", "Selected work", "Five papers")
+        + '<section class="section" aria-labelledby="selected-work">'
+        + '<div class="section-intro"><h2 id="selected-work">Selected publications</h2>'
+          '<a class="text-link" href="/publications/">All publications</a></div>'
         + '<ul class="pub-list selected">%s</ul>' % "".join(
-            pub_html(p, number=str(i + 1), blurb=True, anchor=False) for i, p in enumerate(selected))
-        + '<p style="margin-top:var(--s5)"><a href="/publications/">All %d publications and talks</a></p>' % len(pubs)
+            pub_html(p, number=p["year"], blurb=True, anchor=False) for p in selected)
         + '</section>'
-        + '<section class="section">'
-        + section_head("03", "News", "Recent news")
-        + news_html(news["news"], limit=6)
-        + '</section>'
-        + '</div>'
+        + '<section class="section" aria-labelledby="news">'
+        + '<div class="section-intro"><h2 id="news">Recent news</h2>'
+          '<a class="text-link" href="/feed.xml">RSS feed</a></div>'
+        + news_html(news["news"], limit=3)
+        + ('<details class="details-block"><summary>Earlier updates</summary>%s</details>'
+           % news_html(archive) if archive else "")
+        + '</section></div>'
     )
     return render(site, "/", main, og_type="profile")
 
@@ -408,6 +401,12 @@ def build_research(site, pubs, research, rule_svg, media):
     by_fig = {f["id"]: f for f in media["figures"]}
     by_vid = {v["id"]: v for v in media["videos"]}
     prog = research["programme"]
+    topic_labels = {
+        "parametric-driving-and-noise": "Parametric driving & noise",
+        "engineered-phase-landscapes": "Cavity solitons",
+        "high-dimensional-fiber-solitons": "Multimode fibres",
+        "mode-locking-nanolasers": "Nanolasers",
+    }
 
     thrusts = "".join(
         '<li class="thrust"><h2>%s</h2><dl>'
@@ -440,18 +439,10 @@ def build_research(site, pubs, research, rule_svg, media):
                 % (note_n, e(note["text"]),
                    (" " + " · ".join(refs)) if refs else ""))
 
-        # One <aside> per paragraph: more than one stacks via clear:right and
-        # drifts away from its anchor.
-        paras = list(s["body"])
-        woven = []
-        for i, para in enumerate(paras):
-            if i < len(notes):
-                woven.append(notes[i])
-            woven.append(para)
-        # More asides than paragraphs would stack via clear:right and drift away
-        # from their anchors, so the surplus becomes plain inline notes.
-        for extra in notes[len(paras):]:
-            woven.append(extra.replace('class="sidenote"', 'class="sidenote is-inline"'))
+        prose = "".join(s["body"])
+        notes_block = (
+            '<details class="details-block"><summary>Notes and references</summary>%s</details>'
+            % "".join(notes)) if notes else ""
 
         figs = "".join(figure_html(by_fig[f]) for f in s.get("figures", []) if f in by_fig)
         vids = [by_vid[v] for v in s.get("videos", []) if v in by_vid]
@@ -459,26 +450,30 @@ def build_research(site, pubs, research, rule_svg, media):
 
         strand_pubs = [by_id[pid] for pid in s["pubs"] if pid in by_id]
         strand_pubs.sort(key=lambda p: (-(p.get("year") or 0), p["title"]))
-        listing = "".join(pub_html(p, number=str(i + 1), anchor=False)
+        listing = "".join(pub_html(p, number=str(i + 1), anchor=False, level=3)
                           for i, p in enumerate(strand_pubs))
 
         body.append(
             '<section class="section">'
             + section_head(s["num"], s["era"], s["title"], anchor=s["id"])
             + '<div class="prose"><p class="lede">%s</p>%s</div>' % (
-                e(s["summary"]), "".join(woven))
+                e(s["summary"]), prose)
             + media_block
-            + '<h3 class="caps" style="margin-top:var(--s7)">Publications from this strand</h3>'
-            + '<ul class="pub-list">%s</ul>' % listing
+            + notes_block
+            + '<details class="details-block"><summary>Related publications (%d)</summary>' % len(strand_pubs)
+            + '<ul class="pub-list">%s</ul></details>' % listing
             + '</section>')
 
     main = (
         '<div class="spine">'
         '<section class="section">'
-        + section_head("00", "Overview", "Research programme", anchor="programme", level=1)
-        + '<div class="prose"><p class="lede">%s</p>%s</div>' % (
-            e(prog["lede"]), "".join(prog["body"]))
-        + '<ul class="thrusts">%s</ul>' % thrusts
+        + section_head("00", "Research", "Understanding light in nonlinear systems", anchor="programme", level=1)
+        + '<p class="lede">%s</p>' % e(prog["lede"])
+        + '<nav class="page-nav" aria-label="Research topics">%s</nav>' % "".join(
+            '<a href="#%s">%s</a>' % (e(s["id"]), e(topic_labels.get(s["id"], s["title"])))
+            for s in research["strands"])
+        + '<details class="details-block"><summary>Research approach and future directions</summary>'
+        + '<div class="prose">%s</div><ul class="thrusts">%s</ul></details>' % ("".join(prog["body"]), thrusts)
         + '</section>'
         + rule_svg
         + "".join(body)
@@ -504,7 +499,6 @@ TYPE_LABEL = {
 
 
 def build_publications(site, pubs, rule_svg):
-    selected = [p for p in pubs if p.get("selected")]
     topics = [t for t in TOPIC_LABEL if any(p.get("topic") == t for p in pubs)]
 
     type_pills = "".join(
@@ -527,7 +521,7 @@ def build_publications(site, pubs, rule_svg):
                               % (e(p["type"]), e(p.get("topic") or "other")), 1)
             rows.append(row)
         blocks.append(
-            '<h3 class="year-head caps" id="type-%s">%s <span class="m">(%d)</span></h3>'
+            '<h2 class="year-head" id="type-%s">%s <span class="m">%d</span></h2>'
             '<ul class="pub-list">%s</ul>' % (e(kind), e(TYPE_LABEL[kind]), len(group), "".join(rows)))
 
     ld = [{
@@ -546,26 +540,22 @@ def build_publications(site, pubs, rule_svg):
     }]
 
     main = (
-        '<div class="spine">'
-        '<section class="section">'
-        + section_head("01", "Selected", "Five papers I would show first", level=1)
-        + '<ul class="pub-list selected">%s</ul>' % "".join(
-            pub_html(p, number=str(i + 1), blurb=True, anchor=False, level=2)
-            for i, p in enumerate(selected))
-        + '</section>'
-        + rule_svg
-        + '<section class="section">'
-        + section_head("02", "Everything", "All publications and talks")
+        '<div class="spine"><section class="section">'
+        + section_head("01", "Publications", "Papers & presentations", level=1)
+        + '<p class="lede">Journal articles, preprints, book chapters and conference presentations. '
+          'Search by title, author or venue, or browse by research topic.</p>'
         + '<div class="filterbar" id="filters">'
-        '<div class="filter-group"><span class="filter-legend caps">Type</span>%s</div>'
-        '<div class="filter-group"><span class="filter-legend caps">Topic</span>%s</div>'
-        '<button class="pill" type="button" data-filter="reset" style="margin-top:var(--s3)">Clear</button>'
-        '<p class="filter-count caps" role="status" aria-live="polite" id="pub-count">Showing all %d</p>'
+        '<label class="search-label" for="pub-search">Search publications</label>'
+        '<input class="pub-search" id="pub-search" type="search" placeholder="Title, author or venue…" autocomplete="off" aria-controls="publication-results">'
+        '<div class="filter-group" role="group" aria-label="Publication type"><span class="filter-legend caps">Type</span>%s</div>'
+        '<div class="filter-group" role="group" aria-label="Research topic"><span class="filter-legend caps">Topic</span>%s</div>'
+        '<div class="filter-status"><p class="filter-count" role="status" aria-live="polite" id="pub-count">Showing all %d</p>'
+        '<button class="pill" type="button" data-filter="reset" hidden>Clear filters</button></div>'
         '</div>' % (type_pills, topic_pills, len(pubs))
-        + "".join(blocks)
+        + '<div id="publication-results">' + "".join(blocks) + '</div>'
         + '</section></div>'
     )
-    scripts = '<script src="/assets/js/pubs.js" defer></script>'
+    scripts = '<script src="%s" defer></script>' % asset('/assets/js/pubs.js')
     return render(site, "/publications/", main, scripts, extra_ld=ld)
 
 
@@ -577,23 +567,23 @@ def build_gallery(site, media, rule_svg):
 
     main = (
         '<div class="spine"><section class="section">'
-        + section_head("01", "Figures", "The pictures behind the papers", level=1)
-        + '<p class="lede">Five schematics that carry most of the argument: what a '
-          'multimode soliton is, what a cavity soliton is, where a soliton&rsquo;s noise '
-          'comes from, and why a nanolaser mode-locks at all.</p>'
+        + section_head("01", "Gallery", "A closer look at the research", anchor="figures", level=1)
+        + '<p class="lede">Figures and simulation videos from my work on cavity solitons, '
+          'multimode fibres and nanolasers.</p>'
+        + '<nav class="page-nav" aria-label="Gallery sections"><a href="#figures">Research figures</a><a href="#simulations">Simulation videos</a><a href="#elsewhere">Away from the desk</a></nav>'
         + "".join(figure_html(f) for f in figs)
         + '</section>' + rule_svg
         + '<section class="section">'
-        + section_head("02", "Simulations", "Solitons in motion")
+        + section_head("02", "Simulation videos", "Solitons in motion", anchor="simulations")
         + '<p class="lede">Numerical experiments from the cavity work: soliton crystals '
           'forming and pursuing one another, breathers, chaoticons, and two-dimensional '
-          'solitons losing stability. Nothing loads from YouTube until you press play.</p>'
+          'solitons losing stability.</p>'
         + video_grid(cavity)
         + '<h3 class="caps" style="margin-top:var(--s8)">In graded-index fibre</h3>'
         + video_grid(fiber)
         + '</section>'
         + '<section class="section">'
-        + section_head("03", "Elsewhere", "Away from the desk")
+        + section_head("03", "Elsewhere", "Away from the desk", anchor="elsewhere")
         + '<p class="lede">Conferences take you places. A marathon in Rome, Mont Blanc '
           'from the air, and the long drive down Interstate 5.</p>'
         + video_grid(travel)
@@ -648,7 +638,7 @@ def build_cv(site, cv, pubs, rule_svg):
 
     main = (
         '<div class="spine"><section class="section">'
-        + section_head("01", "Curriculum vitae", site["name"], level=1)
+        + section_head("01", site["name"], "Curriculum vitae", level=1)
         + '<p class="lede">%s</p>' % e(cv["lede"])
         + '<p class="caps" style="margin-top:var(--s5)">%s · %s</p>' % (e(site["org"]), e(site["place"]))
         + '</section>'
@@ -689,7 +679,7 @@ def build_feed(site, news):
                e(re.sub(r"<[^>]+>", "", n["body"]))))
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n'
            '<rss version="2.0"><channel>'
-           '<title>%s &mdash; news</title><link>%s/</link>'
+           '<title>%s — news</title><link>%s/</link>'
            '<description>%s</description><language>en-GB</language>%s'
            '</channel></rss>') % (e(site["name"]), e(site["origin"]),
                                   e(site["meta"]["/"]["desc"]), "".join(items))

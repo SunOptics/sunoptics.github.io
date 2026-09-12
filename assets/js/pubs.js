@@ -1,18 +1,24 @@
-/* pubs.js — the publication filter. Load-bearing, not polish: 65 rows without
-   it is a wall. Within a group the pills are OR; across groups they are AND. */
+/* pubs.js — searchable, shareable publication filters.
+   Within a group the pills are OR; groups and search terms are AND. */
 (function () {
   'use strict';
 
   var bar = document.getElementById('filters');
   if (!bar) return;
 
-  var pills = [].slice.call(bar.querySelectorAll('.pill[data-filter]'));
+  var pills = [].slice.call(bar.querySelectorAll('.pill[data-value][data-filter]'));
   var reset = bar.querySelector('[data-filter="reset"]');
+  var search = document.getElementById('pub-search');
   var rows = [].slice.call(document.querySelectorAll('.pub[data-type]'));
   var count = document.getElementById('pub-count');
-  var groups = document.querySelectorAll('.pub-list');
-  var heads = document.querySelectorAll('.year-head');
+  var heads = [].slice.call(document.querySelectorAll('.year-head'));
   var total = rows.length;
+  var searchable = rows.map(function (row) {
+    return ['.pub-title', '.pub-authors', '.pub-venue'].map(function (selector) {
+      var field = row.querySelector(selector);
+      return field ? field.textContent : '';
+    }).join(' ').toLowerCase().replace(/\s+/g, ' ');
+  });
 
   function state() {
     var s = {};
@@ -24,70 +30,103 @@
     return s;
   }
 
-  function apply() {
+  function apply(writeHash) {
     var s = state();
     var keys = Object.keys(s);
+    var query = search ? search.value.trim() : '';
+    var terms = query ? query.toLowerCase().split(/\s+/) : [];
+    var active = keys.length > 0 || terms.length > 0;
     var shown = 0;
 
-    rows.forEach(function (row) {
+    rows.forEach(function (row, index) {
       var ok = keys.every(function (k) {
         return s[k].indexOf(row.getAttribute('data-' + k)) !== -1;
+      }) && terms.every(function (term) {
+        return searchable[index].indexOf(term) !== -1;
       });
       row.hidden = !ok;
       if (ok) shown++;
     });
 
     // Hide a section heading whose whole list filtered away.
-    for (var i = 0; i < groups.length; i++) {
-      var any = groups[i].querySelector('.pub:not([hidden])');
-      groups[i].hidden = !any;
-      if (heads[i]) heads[i].hidden = !any;
-    }
+    heads.forEach(function (head) {
+      var group = head.nextElementSibling;
+      if (!group || !group.classList.contains('pub-list')) return;
+      var any = group.querySelector('.pub:not([hidden])');
+      group.hidden = !any;
+      head.hidden = !any;
+    });
 
     if (count) {
-      count.textContent = keys.length
-        ? 'Showing ' + shown + ' of ' + total
-        : 'Showing all ' + total;
+      count.textContent = shown === 0
+        ? 'No publications found. Try another search or clear the filters.'
+        : active ? 'Showing ' + shown + ' of ' + total : 'Showing all ' + total;
     }
-    if (reset) reset.hidden = !keys.length;
+    if (reset) reset.hidden = !active;
 
-    // Mirror into the hash so a filtered view is linkable — but never clobber
-    // a deep link to one paper.
-    var frag = keys.map(function (k) { return k + ':' + s[k].join('+'); }).join(',');
-    var target = frag ? '#filter=' + frag : ' ';
+    if (!writeHash) return;
+    // Encode values separately so punctuation in a query cannot become a
+    // filter delimiter. Preserve normal paper anchors when nothing is active.
+    var parts = keys.map(function (k) {
+      return k + ':' + s[k].map(encodeURIComponent).join('+');
+    });
+    if (query) parts.push('q:' + encodeURIComponent(query));
+    var frag = parts.join(',');
     if (location.hash.indexOf('#filter=') === 0 || !location.hash || frag) {
-      history.replaceState(null, '', frag ? target : location.pathname);
+      history.replaceState(null, '', location.pathname + location.search +
+        (frag ? '#filter=' + frag : ''));
     }
   }
 
   pills.forEach(function (p) {
-    if (p.getAttribute('data-filter') === 'reset') return;
     p.addEventListener('click', function () {
       p.setAttribute('aria-checked', p.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
-      apply();
+      apply(true);
     });
   });
+
+  if (search) search.addEventListener('input', function () { apply(true); });
 
   if (reset) {
     reset.addEventListener('click', function () {
       pills.forEach(function (p) { p.setAttribute('aria-checked', 'false'); });
-      apply();
+      if (search) search.value = '';
+      apply(true);
+      if (search) search.focus();
     });
   }
 
-  // Restore from the hash on load.
-  if (location.hash.indexOf('#filter=') === 0) {
-    location.hash.slice(8).split(',').forEach(function (part) {
-      var bits = part.split(':');
-      if (bits.length !== 2) return;
-      bits[1].split('+').forEach(function (val) {
-        pills.forEach(function (p) {
-          if (p.getAttribute('data-filter') === bits[0] && p.getAttribute('data-value') === val) {
-            p.setAttribute('aria-checked', 'true');
-          }
+  function decode(value) {
+    try { return decodeURIComponent(value); } catch (e) { return ''; }
+  }
+
+  // A shared URL and browser history restore the same state. Paper anchors
+  // clear any prior filters so their target remains visible.
+  function restore() {
+    pills.forEach(function (p) { p.setAttribute('aria-checked', 'false'); });
+    if (search) search.value = '';
+    if (location.hash.indexOf('#filter=') === 0) {
+      location.hash.slice(8).split(',').forEach(function (part) {
+        var colon = part.indexOf(':');
+        if (colon < 0) return;
+        var key = part.slice(0, colon);
+        var value = part.slice(colon + 1);
+        if (key === 'q') {
+          if (search) search.value = decode(value);
+          return;
+        }
+        value.split('+').forEach(function (encoded) {
+          var val = decode(encoded);
+          pills.forEach(function (p) {
+            if (p.getAttribute('data-filter') === key && p.getAttribute('data-value') === val) {
+              p.setAttribute('aria-checked', 'true');
+            }
+          });
         });
       });
-    });
+    }
+    apply(false);
   }
-  apply();
+  window.addEventListener('hashchange', restore);
+  restore();
 })();

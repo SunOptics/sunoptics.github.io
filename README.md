@@ -1,153 +1,145 @@
 # ivansuun.github.io — Yifan Sun
 
-The personal research website of Yifan Sun (nonlinear photonics, cavity solitons,
-Kerr resonators). Hand-written HTML and CSS, generated from JSON by a single
-Python script. No framework, no npm, no build service — GitHub Pages serves the
-committed files directly.
+Yifan Sun 的个人研究网站，介绍非线性光子学、腔孤子和 Kerr 谐振器研究。
+内容保存在 JSON 中，由一个 Python 脚本生成静态 HTML；GitHub Pages 直接提供仓库中的页面。
 
-Live at **https://ivansuun.github.io**
+网站：[ivansuun.github.io](https://ivansuun.github.io)
 
----
+## 维护与预览
 
-## 中文维护手册
-
-### 一句话原理
-
-内容全部放在 `data/*.json`，运行 `python3 tools/build.py` 就会把它们渲染成
-`index.html`、`research/index.html` 等文件。你改 JSON，跑一次脚本，提交，网站就更新了。
-**永远不要直接改生成出来的 `.html` 文件** —— 下次跑脚本会被覆盖。
-
-### 日常操作
+修改内容或模板后，在项目根目录运行：
 
 ```bash
 python3 tools/build.py
-```
-
-跑完会打印每个生成文件的大小。然后：
-
-```bash
-git add -A && git commit -m "Update publications" && git push
-```
-
-推上去大约 1 分钟后网站生效。
-
-### 本地预览
-
-```bash
+python3 tools/check.py
 python3 -m http.server 4173
 ```
 
-然后打开 http://localhost:4173 。
+然后打开 [本地预览](http://localhost:4173)。确认页面后，将源文件和生成文件一起提交并推送到 GitHub。
 
-### 我要改什么，就改哪个文件
+日常内容编辑 `data/*.json`；页面结构编辑 `tools/build.py`，共用页头、导航和页脚编辑
+`tools/templates/base.html`。**不要直接修改生成的 HTML**，下一次构建会覆盖这些改动。
 
-| 想做的事 | 改这个文件 |
+| 想修改的内容 | 文件 |
 | --- | --- |
-| 加一篇论文 / 会议报告 | `data/publications.json` |
-| 加一条动态（论文接收、获奖、受邀报告） | `data/news.json` |
-| 改研究方向的介绍文字 | `data/research.json` |
-| 改经历、学位、基金、奖项 | `data/cv.json` |
-| 改姓名、职位、邮箱、Scholar/ORCID 链接、SEO 描述 | `data/site.json` |
-| 加图片或视频 | `data/media.json` |
-| 改配色、字号、间距 | `assets/css/site.css` 顶部的 `:root` 变量 |
+| 论文、预印本、章节、会议报告 | `data/publications.json` |
+| 动态、获奖、受邀报告 | `data/news.json` |
+| 研究方向、相关论文和媒体引用 | `data/research.json` |
+| 经历、学位、基金和奖项 | `data/cv.json` |
+| 姓名、职位、联系链接、首页介绍、页面元信息 | `data/site.json` |
+| 图片、视频、首页与分享图 | `data/media.json` |
+| 配色、字体大小、留白、响应式布局 | `assets/css/site.css` |
+| 字体文件声明 | `assets/css/fonts.css` |
+| 各页面结构 | `tools/build.py` |
+| 共用 HTML 外壳 | `tools/templates/base.html` |
 
-### 加一篇论文
+## 页面结构
 
-在 `data/publications.json` 的 `"publications"` 数组里加一条。字段说明：
+- **首页**：简短的研究者介绍、孤子图、四个研究方向、精选论文和最近三条动态。
+  更早动态收在可展开的归档中。目前有五篇精选论文，数量随数据调整。
+- **Research**：每个方向集中呈现介绍、研究图和视频；相关文献可展开查看。
+- **Publications**：完整文献列表，支持按标题、作者、期刊或会议名称搜索，并按类型与主题筛选。
+  搜索和筛选状态保存在网址的 `#filter=` 部分，可以直接分享；每篇论文也有独立锚点。
+- **Gallery**：研究视频及旅行记录，按内容分组。
+- **CV**：经历、教育、项目、奖项等学术履历。
+
+## 添加论文
+
+在 `data/publications.json` 的 `publications` 数组中添加一条，例如：
 
 ```json
 {
-  "id": "sun-2027-prl-something",        // 唯一标识，用作页面锚点，别用序号
-  "type": "journal",                     // journal | preprint | chapter | conference
-  "authors": ["Y. Sun", "F. Leo"],       // 你自己写成 "Y. Sun" 会自动加粗
+  "id": "sun-2027-prl-something",
+  "type": "journal",
+  "authors": ["Y. Sun", "F. Leo"],
   "title": "论文标题",
   "venue": "Phys. Rev. Lett.",
-  "volume": "131", "pages": "137201", "year": 2027,
-  "doi": "10.1103/...",                  // 没有就写 null
-  "arxiv": "2504.04788",                 // 没有就写 null
-  "book": null,                          // 只有 type=chapter 才填（书名）
-  "role": "first",                       // first | corresponding | co
-  "invited": false,                      // true 会显示 INVITED 标签
-  "award": null,                         // 例如 "Best Oral Award"
-  "presentation": null,                  // 会议才填：oral | poster | invited
-  "location": null,                      // 会议才填："San Jose, USA"
-  "topic": "cavity-solitons",            // cavity-solitons | multimode-fiber | nanolasers | noise | other
-  "status": "published",                 // published | accepted | preprint | upcoming
-  "selected": false,                     // true 会出现在首页「五篇论文」里（保持只有 5 篇）
-  "blurb": null                          // selected 为 true 时写一句大白话说明
+  "volume": null,
+  "pages": null,
+  "year": 2027,
+  "doi": null,
+  "arxiv": null,
+  "book": null,
+  "role": "first",
+  "invited": false,
+  "award": null,
+  "presentation": null,
+  "location": null,
+  "topic": "cavity-solitons",
+  "status": "accepted",
+  "selected": false,
+  "blurb": null
 }
 ```
 
-作者名字里加 `*`（例如 `"Y. Sun*"`）会渲染成通讯作者星号。
+| 字段 | 说明 |
+| --- | --- |
+| `id` | 稳定、唯一的标识，供论文锚点和研究方向引用使用 |
+| `type` | `journal`、`preprint`、`chapter` 或 `conference` |
+| `doi` / `arxiv` | 只填标识符；没有时写 `null` |
+| `book` | 章节所属的书名；其他类型写 `null` |
+| `role` | `first`、`corresponding` 或 `co` |
+| `topic` | `cavity-solitons`、`multimode-fiber`、`nanolasers`、`noise` 或 `other` |
+| `status` | `published`、`accepted`、`preprint` 或 `upcoming` |
+| `selected` | `true` 时进入精选论文列表，数量没有固定限制 |
+| `blurb` | 精选论文必须填写一句简短的研究贡献说明 |
+| `presentation` / `location` | 会议报告形式（`oral`、`poster`、`invited`）和地点 |
+| `invited` / `award` | 是否受邀及奖项名称 |
 
-### 需要你补的两处占位
+作者列表中的 `Y. Sun` 会自动加粗；`Y. Sun*` 会显示通讯作者星号。
+不要改变已有论文的 `id`，以免旧链接和研究方向引用失效。
 
-1. **`data/gallery.json` 里的 `figures`** —— 现在是虚线占位框。把论文里的图存成
-   `assets/img/xxx.png`，再把对应条目的 `src` 改成那个路径，图就会显示出来。
-2. **`data/gallery.json` 里的 `videos`** —— 把 YouTube / Vimeo 的 embed 链接填进 `embed`。
+## 添加图片与视频
 
-（Google Scholar、ORCID、arXiv 三个链接已经填好了，并且写进了页面的 JSON-LD `sameAs`，
-让搜索引擎知道这个网站、你的 Scholar 主页和 ORCID 是同一个人 —— 重名的 Yifan Sun 不少，
-这一步对搜到你很关键。）
+媒体清单使用 `data/media.json`：
 
-### 图片和视频都在哪
+- `share`：首页及分享预览所用图片，包括 `src`、宽高、替代文字和说明。
+- `figures`：研究图，包含稳定的 `id`、本地 `src`、宽高、标题、`alt`、图注和来源链接。
+- `videos`：YouTube 视频，包含视频 `id`、标题、本地 `thumb`、原视频 `href` 和分组。
+  分组为 `cavity`、`fiber` 或 `travel`。
 
-**全部是本地文件，没有一张是外链。** Google Sites 上那些 `googleusercontent.com` 链接会过期，
-所以 `tools/fetch_google_assets.py` 把它们全下载下来提交进仓库了：
+先把图片存入 `assets/img/figures/`，视频封面存入 `assets/img/thumbs/`，
+再将对应条目加入媒体清单。图片路径使用 `assets/img/...`。
+要将媒体挂到某个研究方向，在 `data/research.json` 对应 strand 的 `figures` 或 `videos`
+数组中添加它的 `id`；相关论文则放入 `pubs` 数组。
 
-- `assets/img/banners/home.png` —— 首页那张三维孤子曲面，也就是原来 Google 站的 banner。
-  它同时也是分享到 Slack / 微信 / LinkedIn 时显示的卡片图。
-- `assets/img/figures/*.png` —— Research 页那 5 张示意图，已经按内容重命名，
-  分别挂在对应的研究方向下面。
-- `assets/img/thumbs/*.jpg` —— 22 个 YouTube 视频的封面图，自己托管。
+首页使用 `assets/img/banners/home.png` 中已有的孤子曲面图；它是静态图片。
+目前五张研究图与 22 张视频封面也都从本站加载。仓库还保留了旧站导入的部分未使用 banner。
+`tools/fetch_google_assets.py` 是旧 Google Sites 媒体的导入脚本，日常更新无需运行。
 
-**视频是「点了才加载」的。** 页面上先显示我们自己的封面图和一个播放按钮；
-只有访客真的点了播放，才会插入一个 `youtube-nocookie.com` 的播放器。
-这样页面轻得多（22 个内嵌播放器会有好几 MB），而且只来读文字的人不会被 Google 种 cookie。
-逻辑在 `assets/js/video.js`，约 30 行。
+视频先显示本地封面，点击播放后才加载 `youtube-nocookie.com` 播放器。
+相关逻辑在 `assets/js/video.js`。
 
-要加一张图或一个视频，改 `data/media.json`；要把它挂到某条研究线下面，
-在 `data/research.json` 对应 strand 的 `figures` / `videos` 数组里加上它的 id。
+## 字体与样式
 
-`tools/check.py` 会检查每一个图片文件真的存在、每个 id 都能对上，
-并且构建出来的 HTML 里不含任何 `googleusercontent.com` 或 `i.ytimg.com` 的外链。
+当前排版采用 Google Fonts 的 **Roboto**，正常体和斜体均支持 100–900 可变字重，
+拉丁字符子集以 WOFF2 文件保存在 `assets/fonts/`，通过 `fonts.css` 本地加载。
+许可见 `assets/fonts/Roboto-OFL.txt`。Newsreader 和 IBM Plex Mono 文件及声明暂时保留，
+当前页面排版不使用它们。
 
-### 姓名下面那条细线
+颜色、排版、间距和布局集中在 `assets/css/site.css` 中。
+`tools/make_assets.py` 可离线生成 favicon 与旧版 `soliton-rule.svg`；
+后者保留在仓库中，当前首页不使用。网页运行时无需进行物理模拟。
 
-`assets/img/soliton-rule.svg`，是 `tools/make_assets.py` 用分步傅里叶法解
-Lugiato–Lefever 方程离线生成的一条 |E|² 曲线。favicon 同理。这是构建前生成、提交进仓库的静态
-SVG，网页运行时不做任何计算。想换就改参数重跑：
+## 文件布局与检查
 
-```bash
-python3 tools/make_assets.py && python3 tools/build.py
+```text
+data/                       网站内容
+tools/build.py              页面与 feed、sitemap 生成器
+tools/templates/base.html   共用 HTML 模板
+tools/check.py              数据、引用、资源与生成结果检查
+tools/make_assets.py        离线 SVG 生成工具
+tools/fetch_google_assets.py 旧站媒体导入工具
+assets/css/                 样式与字体声明
+assets/js/                  主题切换、论文搜索筛选、视频播放
+assets/fonts/               自托管字体与许可
+assets/img/                 首页图、研究图、视频封面
+index.html 等               生成结果，随源文件一起提交
 ```
 
----
+`tools/check.py` 检查论文标识与 DOI、精选论文说明、研究与媒体引用、页面标题和描述、
+资源文件、重复 HTML id、本页及跨页面锚点，以及 feed 和 sitemap 的 XML 格式。
+字体检查以 `fonts.css` 实际引用的文件为准。
 
-## Layout
-
-```
-data/            content — the only files you normally edit
-tools/build.py   renders data/ into the pages at the repo root
-tools/make_assets.py   generates the soliton rule and favicon from the physics, offline
-tools/fetch_google_assets.py  one-shot import of the images and thumbnails from the old site
-tools/check.py         lints the data and the built site; run it after build.py
-tools/templates/ the shared HTML shell
-assets/css/      site.css (design tokens first), fonts.css
-assets/js/       site.js (theme), pubs.js (filter), video.js (click-to-load video)
-assets/fonts/    Newsreader + IBM Plex Mono, self-hosted — no request reaches Google
-assets/img/      banners, figures and video thumbnails, all served from here
-index.html …     generated; do not edit by hand
-```
-
-## Notes
-
-- Fonts are self-hosted deliberately: `fonts.gstatic.com` would send every
-  visitor's IP to Google, which is neither necessary nor appropriate on a page
-  hosted by an EU institution's researcher.
-- `.nojekyll` skips Jekyll processing, so deploys are fast and `_`-prefixed
-  paths are served as-is.
-- Everything a crawler needs — titles, descriptions, JSON-LD, the publication
-  list — is in the served HTML, never assembled by JavaScript.
-- No image is hot-linked. Video players load only on click, from
-  youtube-nocookie.com, so a reader who never presses play is never tracked.
+站点无需 npm 或前端框架。标题、描述、JSON-LD 和论文内容直接写入 HTML，
+JavaScript 用于主题、搜索筛选及按需播放。`.nojekyll` 让 GitHub Pages 直接提供生成文件。

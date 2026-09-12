@@ -15,6 +15,8 @@ import re
 import sys
 from collections import Counter
 from html.parser import HTMLParser
+from urllib.parse import unquote, urlsplit
+from xml.etree import ElementTree
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
@@ -116,11 +118,8 @@ def check_publications(pubs):
     check("field values")
 
     sel = [p for p in pubs if p.get("selected")]
-    if len(sel) != 5:
-        err("publications.json: %d entries are selected; the front page is laid out "
-            "for exactly 5" % len(sel))
     for p in sel:
-        if not p.get("blurb"):
+        if not isinstance(p.get("blurb"), str) or not p["blurb"].strip():
             err("publications.json: selected entry %s has no blurb" % p["id"])
     check("selected set")
 
@@ -232,6 +231,7 @@ def check_built():
     pages = ["index.html", "research/index.html", "publications/index.html",
              "gallery/index.html", "cv/index.html", "404.html"]
     all_ids = {}
+    all_hrefs = {}
     for page in pages:
         path = os.path.join(ROOT, page)
         if not os.path.exists(path):
@@ -245,6 +245,7 @@ def check_built():
             if n > 1:
                 err("%s: duplicate id %r appears %d times" % (page, i, n))
         all_ids[page] = set(c.ids)
+        all_hrefs[page] = c.hrefs
         if c.imgs_without_alt:
             err("%s: %d <img> without alt" % (page, c.imgs_without_alt))
         if c.headings and c.headings.count(1) != 1:
@@ -265,12 +266,16 @@ def check_built():
             if not os.path.exists(os.path.join(ROOT, target)):
                 err("%s: references %s, which does not exist" % (page, ref))
 
-        for href in c.hrefs:
+    # Resolve fragments after all pages have been parsed, including links to
+    # pages later in the list. Publication filter hashes are application state.
+    for page, hrefs in all_hrefs.items():
+        for href in hrefs:
+            parts = urlsplit(href)
+            target = None
             if href.startswith("#"):
-                if href[1:] and href[1:] not in all_ids[page]:
-                    err("%s: in-page link %s has no matching id" % (page, href))
-            elif href.startswith("/"):
-                base = href.split("#")[0]
+                target = page
+            elif href.startswith("/") and not parts.netloc:
+                base = unquote(parts.path)
                 target = base.strip("/") + "/index.html" if base.endswith("/") else base.lstrip("/")
                 if base == "/":
                     target = "index.html"
@@ -280,6 +285,10 @@ def check_built():
             elif href.startswith("mailto:"):
                 if "@" not in href:
                     err("%s: malformed mailto %s" % (page, href))
+            fragment = unquote(parts.fragment)
+            is_filter = target == "publications/index.html" and fragment.startswith("filter=")
+            if target in all_ids and fragment and not is_filter and fragment not in all_ids[target]:
+                err("%s: link %s has no matching id in %s" % (page, href, target))
     check("built pages")
 
     html_all = ""
@@ -295,21 +304,38 @@ def check_built():
 
     for f in ["assets/css/site.css", "assets/css/fonts.css", "assets/js/site.js",
               "assets/js/video.js", "assets/js/pubs.js",
-              "assets/img/favicon.svg", "assets/img/soliton-rule.svg",
+              "assets/img/favicon.svg",
               "assets/img/banners/home.png",
               "sitemap.xml", "robots.txt", "feed.xml", ".nojekyll"]:
         if not os.path.exists(os.path.join(ROOT, f)):
             err("missing file: %s" % f)
-    fonts = [f for f in os.listdir(os.path.join(ROOT, "assets", "fonts"))
-             if f.endswith(".woff2")]
-    if len(fonts) < 4:
-        err("assets/fonts: expected 4 woff2 files, found %d" % len(fonts))
-    css = open(os.path.join(ROOT, "assets", "css", "fonts.css"), encoding="utf-8").read()
-    for host in ("fonts.googleapis.com", "fonts.gstatic.com"):
-        if host in css:
-            err("assets/css/fonts.css references %s — the fonts are meant to be "
-                "self-hosted so no visitor IP reaches Google" % host)
+    font_css_path = os.path.join(ROOT, "assets", "css", "fonts.css")
+    if os.path.exists(font_css_path):
+        with open(font_css_path, encoding="utf-8") as fh:
+            css = re.sub(r"/\*.*?\*/", "", fh.read(), flags=re.S)
+        font_urls = re.findall(r"url\(\s*['\"]?([^\s)'\"]+)['\"]?\s*\)", css)
+        if not font_urls:
+            err("assets/css/fonts.css: no font files referenced")
+        for ref in font_urls:
+            parts = urlsplit(ref)
+            if parts.scheme or parts.netloc:
+                err("assets/css/fonts.css: font URL %s must refer to a local file" % ref)
+                continue
+            path = unquote(parts.path)
+            target = os.path.join(ROOT, path.lstrip("/")) if path.startswith("/") \
+                else os.path.join(os.path.dirname(font_css_path), path)
+            if not os.path.isfile(target):
+                err("assets/css/fonts.css: references missing font %s" % ref)
     check("assets")
+
+    for name in ("feed.xml", "sitemap.xml"):
+        path = os.path.join(ROOT, name)
+        if os.path.exists(path):
+            try:
+                ElementTree.parse(path)
+            except ElementTree.ParseError as exc:
+                err("%s: invalid XML (%s)" % (name, exc))
+    check("feed and sitemap XML")
 
 
 def main():
