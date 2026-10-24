@@ -2,6 +2,14 @@
   "lede": "I am a theorist working on the nonlinear dynamics of driven-dissipative optical systems: cavity solitons and frequency combs, multimode and spatiotemporal light in optical fibres, and the quantum-limited noise that sets the coherence of both. My work combines bifurcation theory, reduced analytical models and large-scale numerics, and is developed in close contact with the experimental groups that build these cavities and fibres.",
   "positions": [
     {
+      "from": "2026-06",
+      "to": null,
+      "role": "Postdoctoral Researcher",
+      "org": "Université libre de Bruxelles",
+      "place": "Brussels, Belgium",
+      "note": "OPERA-Photonique"
+    },
+    {
       "from": "2024-06",
       "to": "2026-05",
       "role": "Marie Skłodowska-Curie Postdoctoral Fellow",
@@ -30,30 +38,31 @@
     {
       "from": "2016-10",
       "to": "2021-05",
-      "degree": "Ph.D.",
+      "degree": "Ph.D. in Laser Physics",
       "org": "University of Paris-Saclay",
       "place": "Paris, France",
-      "note": "Mode-locking of Hermite-Gaussian modes in harmonic-cavity semiconductor nanolasers, including their dynamics, robustness and noise"
+      "note": "Theory of mode-locked lasers based on non-conventional cavity modes. Defended 12 January 2021; degree certificate issued 17 November 2021.",
+      "thesis_url": "https://theses.fr/2021UPASP003"
     },
     {
       "from": "2013-09",
-      "to": "2016-06",
-      "degree": "Master's",
+      "to": "2016-07",
+      "degree": "M.Sc. in Radiophysics",
       "org": "University of Electronic Science and Technology of China",
       "place": "Chengdu, China",
       "note": "Time-frequency signal representation based on temporal Fourier transformation"
     },
     {
       "from": "2009-09",
-      "to": "2013-06",
-      "degree": "Bachelor's",
+      "to": "2013-07",
+      "degree": "B.Sc. in Electronic Engineering",
       "org": "Xidian University",
       "place": "Xi'an, China",
-      "note": null
+      "note": "Minor in Computer Applications"
     }
   ],
   "funding": {
-    "lede": "I have been awarded two consecutive Marie Skłodowska-Curie Postdoctoral Fellowships as sole applicant — BEAMLOCKER (call 2021, Sapienza University of Rome) followed directly by ENLIGHTENS (call 2023, Université libre de Bruxelles) — which is rare: the scheme is highly competitive, each proposal was written and defended by me alone, and the second was won while the first was still running. Together with a Sapienza supplementary Marie Curie award and an earlier Sapienza Campus Grant, this has funded my research continuously since 2021.",
+    "lede": "I was awarded two consecutive Marie Skłodowska-Curie Postdoctoral Fellowships: BEAMLOCKER at Sapienza University of Rome (2022–2024), followed by ENLIGHTENS at Université libre de Bruxelles (2024–2026). Additional support came from the Sapienza Supplementary Marie Curie Program and a Sapienza Campus Grant.",
     "grants": [
       {
         "acronym": "ENLIGHTENS",
@@ -62,7 +71,8 @@
         "from": "2024-06",
         "to": "2026-05",
         "host": "Université libre de Bruxelles",
-        "role": "Sole applicant and fellow"
+        "role": "Sole applicant and fellow",
+        "budget": "€175,920.00"
       },
       {
         "acronym": "BEAMLOCKER",
@@ -71,7 +81,8 @@
         "from": "2022-06",
         "to": "2024-05",
         "host": "Sapienza University of Rome",
-        "role": "Sole applicant and fellow"
+        "role": "Sole applicant and fellow",
+        "budget": "€172,750.08"
       },
       {
         "acronym": "EFFILOCKER",
@@ -80,16 +91,18 @@
         "from": "2023-06",
         "to": "2024-05",
         "host": "Sapienza University of Rome",
-        "role": "Sole applicant and principal investigator"
+        "role": "Sole applicant and principal investigator",
+        "budget": "€17,000.00"
       },
       {
-        "acronym": null,
+        "acronym": "Sapienza Campus Grant",
         "id": null,
         "scheme": "Sapienza University of Rome Campus Grant (call 2021)",
         "from": "2021-06",
         "to": "2022-05",
         "host": "Sapienza University of Rome",
-        "role": "Sole applicant and principal investigator"
+        "role": "Sole applicant and principal investigator",
+        "budget": "€2,000.00"
       }
     ]
   },
@@ -106,14 +119,14 @@
       "title": null,
       "venue": "MathSEE 2026",
       "place": "Karlsruhe, Germany",
-      "upcoming": true
+      "upcoming": false
     },
     {
       "year": 2026,
       "title": "Pathway-Resolved Noise Channels in Temporal Cavity Solitons",
       "venue": "AIMS Conference 2026",
       "place": "Athens, Greece",
-      "upcoming": true
+      "upcoming": false
     },
     {
       "year": 2024,
@@ -143,6 +156,34 @@
       "Independent proposal writing and project management, including two Marie Skłodowska-Curie fellowships as sole applicant",
       "Multi-institution European and international projects across nonlinear and multimode photonics",
       "Invited review and book-chapter writing, and regular conference presentation"
+    ]
+  },
+  "updated": "2026-10-24",
+  "metrics": {
+    "as_of": "2026-10-22",
+    "citations": 748,
+    "h_index": 18,
+    "i10_index": 24,
+    "source_label": "Google Scholar",
+    "source_url": "https://scholar.google.com/citations?user=Bt99tw4AAAAJ"
+  },
+  "service": {
+    "summary": "Peer reviewer for international journals in optics, photonics and nonlinear dynamics.",
+    "journals": [
+      "Nature Photonics",
+      "Nature Communications",
+      "Light: Science & Applications",
+      "Communications Physics",
+      "Physical Review Letters",
+      "Physical Review Research",
+      "Physical Review A",
+      "Journal of Lightwave Technology",
+      "Chaos, Solitons & Fractals",
+      "Journal of the Optical Society of America B",
+      "Optical Fiber Technology",
+      "Optics Express",
+      "Optics Letters",
+      "Photonics Research"
     ]
   }
 }

@@ -87,7 +87,21 @@ python3 -m http.server 4173
 | `invited` / `award` | 是否受邀及奖项名称 |
 
 作者列表中的 `Y. Sun` 会自动加粗；`Y. Sun*` 会显示通讯作者星号。
+`authorship_note` 可填写共同第一作者等补充说明，会显示在作者列表下方。
 不要改变已有论文的 `id`，以免旧链接和研究方向引用失效。
+
+## CV 信息来源与更新
+
+2026 年 10 月的内容更新依据 [Yifan_CV](https://github.com/ivansuun/Yifan_CV)
+的 `main_new_format.tex`、`main_CV.tex`、`papers.bib` 和 `conferences.bib`
+（2026-10-22，源版本 `0a181a679f52f5c2e1e1e4d33d0ed0ba0617f942`）。
+2026 年 6 月起继续在 ULB 担任博士后，由本人在 2026-10-24 确认。
+
+`data/cv.json` 的 `updated` 记录 CV 页更新日期，`metrics.as_of` 单独记录引用指标日期，
+避免把历史快照显示为实时统计。`funding.grants` 的 `budget` 保存基金预算；
+`service.journals` 保存审稿期刊。论文数量从 `publications.json` 自动计算。
+两版源 CV 的审稿次数不一致，网站仅展示两者共有的明确期刊名单。
+同步时以 CV 实际引用的文献为准，不直接导入 BibTeX 文件中未引用的草稿或旧预印本副本。
 
 ## 添加图片与视频
 

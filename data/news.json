@@ -1,6 +1,16 @@
 {
   "news": [
     {
+      "date": "2026-10-13",
+      "title": "Preprint: mode locking by phase-sensitive amplification",
+      "body": "New preprint with F. De Lucia, G. Semaan, C. Dupont, N. Englebert, S.-P. Gorza and F. Leo. We demonstrate mode locking through phase-sensitive amplification, with pulse formation and optical-phase referencing arising from the same coherent nonlinear feedback. Co-first and corresponding author.",
+      "link": {
+        "href": "https://arxiv.org/abs/2610.18559",
+        "label": "Read the preprint"
+      },
+      "tag": "preprint"
+    },
+    {
       "date": "2026-09-01",
       "title": "Invited talk at the MathSEE Symposium in Karlsruhe",
       "body": "Invited to speak at MathSEE 2026 in Karlsruhe, Germany — the second invited talk of the year, after the AIMS Conference in Athens.",

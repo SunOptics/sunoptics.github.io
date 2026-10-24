@@ -203,6 +203,17 @@ main > .spine > .soliton { display: none; }
 .grant-id { color: var(--ink-faint); font-size: .8125rem; }
 .grant-scheme { color: var(--ink-muted); font-size: .9375rem; margin: .5rem 0; }
 .grant-meta { margin-top: .5rem; }
+.review-journals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .55rem 2rem;
+  padding-left: 1.25rem;
+  font-size: .9375rem;
+  color: var(--ink-muted);
+}
+@media (width < 40rem) {
+  .review-journals { grid-template-columns: 1fr; }
+}
 
 /* Figures and click-to-play media */
 figure { margin: 2.5rem 0; }

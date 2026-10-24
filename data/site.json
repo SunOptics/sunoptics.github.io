@@ -1,11 +1,11 @@
 {
   "name": "Yifan Sun",
   "origin": "https://ivansuun.github.io",
-  "role": "Marie Skłodowska-Curie Postdoctoral Fellow",
+  "role": "Postdoctoral Researcher",
   "org": "OPERA-Photonique, Université libre de Bruxelles",
   "place": "Brussels, Belgium",
   "tagline": "Nonlinear photonics · cavity solitons · Kerr resonators",
-  "lede": "I am a Marie Skłodowska-Curie postdoctoral fellow at OPERA-Photonique, Université libre de Bruxelles, where I study how cavity solitons are born, interact and fall apart inside driven Kerr resonators.",
+  "lede": "I am a postdoctoral researcher at OPERA-Photonique, Université libre de Bruxelles, working on cavity solitons, frequency combs and noise in nonlinear optical resonators.",
   "thesis": "I study how light organises itself into pulses that hold their shape for billions of round trips inside a resonator.",
   "emails": [
     {
@@ -58,7 +58,7 @@
   "meta": {
     "/": {
       "title": "Yifan Sun — Nonlinear Photonics & Cavity Solitons",
-      "desc": "Yifan Sun is a Marie Skłodowska-Curie fellow in nonlinear photonics at OPERA-Photonique, ULB, working on cavity solitons and combs in Kerr resonators."
+      "desc": "Yifan Sun is a postdoctoral researcher in nonlinear photonics at ULB, working on cavity solitons, frequency combs and noise in driven Kerr resonators."
     },
     "/research/": {
       "title": "Research — Yifan Sun | Cavity Solitons in Kerr Resonators",
@@ -74,7 +74,7 @@
     },
     "/cv/": {
       "title": "CV — Yifan Sun | Photonics Postdoc, ULB Brussels",
-      "desc": "Curriculum vitae of Yifan Sun, Marie Skłodowska-Curie fellow in nonlinear photonics at ULB: education, fellowships, awards and cavity soliton research."
+      "desc": "Curriculum vitae of Yifan Sun, postdoctoral researcher at ULB: nonlinear photonics, education, Marie Skłodowska-Curie fellowships, grants and peer review."
     }
   }
 }

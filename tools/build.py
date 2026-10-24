@@ -170,16 +170,18 @@ def pub_html(p, number=None, blurb=False, anchor=True, level=3):
     title_html = '<a href="%s" rel="noopener">%s</a>' % (e(href), title) if href else title
     num = '<div class="pub-n m">%s</div>' % (e(number) if number is not None else "")
     blurb_html = ('<p class="pub-blurb">%s</p>' % e(p["blurb"])) if (blurb and p.get("blurb")) else ""
+    authorship = ('<p class="caps">%s</p>' % e(p["authorship_note"])) if p.get("authorship_note") else ""
     idattr = ' id="%s"' % e(p["id"]) if anchor else ""
     return (
         '<li class="pub"%s>%s<div>'
         '<h%d class="pub-title">%s%s</h%d>'
         '%s'
         '<p class="pub-authors">%s</p>'
+        '%s'
         '<p class="pub-venue">%s</p>'
         '%s</div></li>'
     ) % (idattr, num, level, badges_html(p), title_html, level, blurb_html,
-         authors_html(p["authors"]), venue_html(p), links_html(p))
+         authors_html(p["authors"]), authorship, venue_html(p), links_html(p))
 
 
 # --------------------------------------------------------------- page shell
@@ -544,6 +546,7 @@ def build_publications(site, pubs, rule_svg):
         + section_head("01", "Publications", "Papers & presentations", level=1)
         + '<p class="lede">Journal articles, preprints, book chapters and conference presentations. '
           'Search by title, author or venue, or browse by research topic.</p>'
+        + '<p class="caps">An asterisk (*) marks a corresponding author.</p>'
         + '<div class="filterbar" id="filters">'
         '<label class="search-label" for="pub-search">Search publications</label>'
         '<input class="pub-search" id="pub-search" type="search" placeholder="Title, author or venue…" autocomplete="off" aria-controls="publication-results">'
@@ -598,6 +601,8 @@ def build_cv(site, cv, pubs, rule_svg):
         out = []
         for r in rows:
             note = ('<p class="tl-note">%s</p>' % e(r["note"])) if r.get("note") else ""
+            if r.get("thesis_url"):
+                note += '<p class="tl-note"><a href="%s">Doctoral thesis</a></p>' % e(r["thesis_url"])
             out.append(
                 '<li class="tl-item"><div class="tl-when m">%s &ndash; %s</div>'
                 '<div><h3 class="tl-role">%s</h3>'
@@ -609,9 +614,9 @@ def build_cv(site, cv, pubs, rule_svg):
     grants = "".join(
         '<article class="grant"><div class="grant-head">'
         '<h3 class="grant-acronym">%s</h3><span class="grant-id m">%s</span></div>'
-        '<p class="grant-scheme">%s</p>'
+        '<p class="grant-scheme">%s</p><p class="tl-note">Budget: %s</p>'
         '<p class="grant-meta caps">%s &ndash; %s · %s · %s</p></article>'
-        % (e(g["acronym"]), e(g.get("id") or ""), e(g["scheme"]),
+        % (e(g["acronym"] or g["scheme"]), e(g.get("id") or ""), e(g["scheme"]), e(g["budget"]),
            e(ym(g["from"])), e(ym(g.get("to"))), e(g["host"]), e(g["role"]))
         for g in cv["funding"]["grants"])
 
@@ -636,12 +641,42 @@ def build_cv(site, cv, pubs, rule_svg):
     for p in pubs:
         counts[p["type"]] = counts.get(p["type"], 0) + 1
 
+    first_or_corresponding = sum(
+        p["type"] in ("journal", "preprint") and p["role"] in ("first", "corresponding")
+        for p in pubs)
+    metrics = cv["metrics"]
+    record = (
+        '<section class="section">'
+        + section_head("02", "Research record", "Publications & impact")
+        + '<p class="lede"><a href="/publications/#type-journal">%d journal articles</a>, '
+          '<a href="/publications/#type-preprint">%d preprints</a> and '
+          '<a href="/publications/#type-chapter">%d book chapters</a>; '
+          '%d journal articles and preprints as first or corresponding author.</p>'
+          % (counts.get("journal", 0), counts.get("preprint", 0), counts.get("chapter", 0), first_or_corresponding)
+        + '<p>%s citations · h-index %s · i10-index %s</p>'
+          % (e(metrics["citations"]), e(metrics["h_index"]), e(metrics["i10_index"]))
+        + '<p class="caps"><a href="%s">%s</a> snapshot recorded in the CV, '
+          '<time datetime="%s">%s</time>.</p>'
+          % (e(metrics["source_url"]), e(metrics["source_label"]), e(metrics["as_of"]), e(iso_long(metrics["as_of"])))
+        + '</section>'
+    )
+    service = (
+        '<section class="section">'
+        + section_head("09", "Academic service", "Peer review")
+        + '<p>%s</p>' % e(cv["service"]["summary"])
+        + '<ul class="review-journals">%s</ul>' % "".join(
+            '<li>%s</li>' % e(journal) for journal in cv["service"]["journals"])
+        + '</section>'
+    )
+
     main = (
         '<div class="spine"><section class="section">'
         + section_head("01", site["name"], "Curriculum vitae", level=1)
         + '<p class="lede">%s</p>' % e(cv["lede"])
         + '<p class="caps" style="margin-top:var(--s5)">%s · %s</p>' % (e(site["org"]), e(site["place"]))
+        + '<p class="caps">Last updated: <time datetime="%s">%s</time>.</p>' % (e(cv["updated"]), e(iso_long(cv["updated"])))
         + '</section>'
+        + record
         + '<section class="section">' + section_head("02", "Appointments", "Positions")
         + timeline(cv["positions"], "role", "org") + '</section>'
         + '<section class="section">' + section_head("03", "Education", "Degrees")
@@ -657,6 +692,7 @@ def build_cv(site, cv, pubs, rule_svg):
         + '</section>'
         + '<section class="section">' + section_head("07", "Methods", "What I bring")
         + '<div class="thrusts">%s</div>' % skills + '</section>'
+        + service
         + '</div>'
     )
     return render(site, "/cv/", main)
