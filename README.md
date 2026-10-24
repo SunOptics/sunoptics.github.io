@@ -1,9 +1,9 @@
-# ivansuun.github.io — Yifan Sun
+# sunoptics.github.io — Yifan Sun
 
 Yifan Sun 的个人研究网站，介绍非线性光子学、腔孤子和 Kerr 谐振器研究。
 内容保存在 JSON 中，由一个 Python 脚本生成静态 HTML；GitHub Pages 直接提供仓库中的页面。
 
-网站：[ivansuun.github.io](https://ivansuun.github.io)
+网站：[sunoptics.github.io](https://sunoptics.github.io)
 
 ## 维护与预览
 
@@ -92,7 +92,7 @@ python3 -m http.server 4173
 
 ## CV 信息来源与更新
 
-2026 年 10 月的内容更新依据 [Yifan_CV](https://github.com/ivansuun/Yifan_CV)
+2026 年 10 月的内容更新依据 [Yifan_CV](https://github.com/SunOptics/Yifan_CV)
 的 `main_new_format.tex`、`main_CV.tex`、`papers.bib` 和 `conferences.bib`
 （2026-10-22，源版本 `0a181a679f52f5c2e1e1e4d33d0ed0ba0617f942`）。
 2026 年 6 月起继续在 ULB 担任博士后，由本人在 2026-10-24 确认。

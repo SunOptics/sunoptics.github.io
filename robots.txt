@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ivansuun.github.io/sitemap.xml
+Sitemap: https://sunoptics.github.io/sitemap.xml
