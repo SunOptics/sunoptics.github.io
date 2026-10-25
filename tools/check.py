@@ -58,6 +58,7 @@ class IdCollector(HTMLParser):
         self.assets = []
         self.imgs_without_alt = 0
         self.headings = []
+        self.beacons = []
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -69,6 +70,8 @@ class IdCollector(HTMLParser):
             self.assets.append(a["href"])
         if tag == "script" and a.get("src", "").startswith("/"):
             self.assets.append(a["src"])
+        if tag == "script" and "data-cf-beacon" in a:
+            self.beacons.append(a)
         if tag == "img" and "alt" not in a:
             self.imgs_without_alt += 1
         if tag in ("h1", "h2", "h3", "h4", "h5", "h6"):
@@ -224,6 +227,9 @@ def check_site(site):
     for p in site["pages"]:
         if p["href"] not in site["meta"]:
             err("site.json: page %s has no meta entry" % p["href"])
+    token = site.get("analytics", {}).get("cloudflare_token")
+    if token is not None and (not isinstance(token, str) or not re.fullmatch(r"[0-9a-fA-F]{32}", token)):
+        err("site.json: analytics.cloudflare_token must be null or a 32-character site token")
     check("no placeholders")
 
 
@@ -232,6 +238,7 @@ def check_built():
              "gallery/index.html", "cv/index.html", "404.html"]
     all_ids = {}
     all_hrefs = {}
+    token = load("site.json").get("analytics", {}).get("cloudflare_token")
     for page in pages:
         path = os.path.join(ROOT, page)
         if not os.path.exists(path):
@@ -241,6 +248,17 @@ def check_built():
             html = fh.read()
         c = IdCollector()
         c.feed(html)
+        if len(c.beacons) != (1 if token else 0):
+            err("%s: expected %d analytics beacons, found %d" % (page, 1 if token else 0, len(c.beacons)))
+        for beacon in c.beacons:
+            try:
+                config = json.loads(beacon["data-cf-beacon"])
+                if config.get("token") != token or config.get("spa") is not False:
+                    err("%s: analytics beacon configuration does not match the site" % page)
+            except (ValueError, TypeError):
+                err("%s: analytics beacon has invalid JSON" % page)
+            if beacon.get("src") != "https://static.cloudflareinsights.com/beacon.min.js" or beacon.get("type") != "module":
+                err("%s: analytics beacon must use the official module script" % page)
         for i, n in Counter(c.ids).items():
             if n > 1:
                 err("%s: duplicate id %r appears %d times" % (page, i, n))
@@ -290,6 +308,7 @@ def check_built():
             if target in all_ids and fragment and not is_filter and fragment not in all_ids[target]:
                 err("%s: link %s has no matching id in %s" % (page, href, target))
     check("built pages")
+    check("analytics beacon coverage and configuration")
 
     html_all = ""
     for page in pages:

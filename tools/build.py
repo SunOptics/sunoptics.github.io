@@ -254,6 +254,20 @@ def jsonld(site, extra=None):
     return '<script type="application/ld+json">%s</script>' % payload
 
 
+def analytics_html(site):
+    """The public site beacon only; reports remain in the owner's account."""
+    token = site.get("analytics", {}).get("cloudflare_token")
+    if token is None:
+        return ""
+    if not isinstance(token, str) or not re.fullmatch(r"[0-9a-fA-F]{32}", token):
+        raise ValueError("analytics.cloudflare_token must be a 32-character Web Analytics site token")
+    config = json.dumps({"token": token, "spa": False}, separators=(",", ":"))
+    return (
+        '<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" '
+        'data-cf-beacon=\'%s\'></script>' % e(config)
+    )
+
+
 def render(site, path, main, scripts="", extra_ld=None, og_type="website"):
     with open(os.path.join(TPL, "base.html"), encoding="utf-8") as fh:
         tpl = fh.read()
@@ -270,6 +284,7 @@ def render(site, path, main, scripts="", extra_ld=None, og_type="website"):
            .replace("{{MAIN}}", main)
            .replace("{{FOOTER}}", footer_html(site))
            .replace("{{SCRIPTS}}", scripts)
+           .replace("{{ANALYTICS}}", analytics_html(site))
            .replace("{{OG_IMAGE}}", SHARE_IMAGE[0])
            .replace("{{CSS_FONTS}}", asset("/assets/css/fonts.css"))
            .replace("{{CSS_SITE}}", asset("/assets/css/site.css"))
@@ -754,6 +769,7 @@ def build_404(site):
               .replace("{{MAIN}}", main)
               .replace("{{FOOTER}}", footer_html(site))
               .replace("{{SCRIPTS}}", "")
+              .replace("{{ANALYTICS}}", analytics_html(site))
               .replace("{{OG_IMAGE}}", SHARE_IMAGE[0])
            .replace("{{CSS_FONTS}}", asset("/assets/css/fonts.css"))
               .replace("{{CSS_SITE}}", asset("/assets/css/site.css"))

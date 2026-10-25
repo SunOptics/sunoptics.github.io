@@ -135,6 +135,24 @@ python3 -m http.server 4173
 `tools/make_assets.py` 可离线生成 favicon 与旧版 `soliton-rule.svg`；
 后者保留在仓库中，当前首页不使用。网页运行时无需进行物理模拟。
 
+## 仅自己查看的访问统计
+
+网站支持 Cloudflare Web Analytics，报表在自己的 Cloudflare 账号后台查看，
+网页上不展示访问人数、来源地区或公开统计面板。
+
+1. 登录 [Cloudflare](https://dash.cloudflare.com/)，打开 **Web Analytics → Add a site**。
+2. 添加 `sunoptics.github.io`，在 **Manage site** 中取得统计代码。
+3. 把代码 `data-cf-beacon` 中的 `token` 值填入
+   `data/site.json` 的 `analytics.cloudflare_token`，重新构建并发布。
+
+该值是公开的 Web Analytics 站点标识，不是 Cloudflare API 密钥。
+设置为 `null` 时不加载统计脚本。已为 `sunoptics.github.io` 配置站点标识，
+发布后开始采集，报表仅在自己的 Cloudflare 后台查看。
+公共模板会给所有页面及 404 页添加同一个异步模块脚本，使用 `spa: false`，
+避免把论文筛选等页内操作算成新页面访问。
+无需迁移 GitHub Pages 托管或修改 DNS，也无需把统计报表放进网站。
+维护状态以 `data/site.json` 的实际配置为准。
+
 ## 文件布局与检查
 
 ```text
