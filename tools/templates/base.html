@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESC}}">
+<link rel="canonical" href="{{CANONICAL}}">
+<meta name="author" content="Yifan Sun">
+<meta name="theme-color" content="#ffffff">
+
+<!-- Stamp the theme before first paint, or every dark-mode visitor gets a white flash. -->
+<script>
+(function(){try{var t=localStorage.getItem('theme-choice');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}
+var d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',d?'#15181d':'#ffffff');}catch(e){}})();
+</script>
+
+<link rel="preload" href="/assets/fonts/roboto-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{CSS_FONTS}}">
+<link rel="stylesheet" href="{{CSS_SITE}}">
+<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="alternate" type="application/rss+xml" title="Yifan Sun — news" href="/feed.xml">
+
+<meta property="og:type" content="{{OG_TYPE}}">
+<meta property="og:site_name" content="Yifan Sun">
+<meta property="og:locale" content="en_GB">
+<meta property="og:url" content="{{CANONICAL}}">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESC}}">
+<meta property="og:image" content="{{ORIGIN}}{{OG_IMAGE}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{TITLE}}">
+<meta name="twitter:description" content="{{DESC}}">
+<meta name="twitter:image" content="{{ORIGIN}}{{OG_IMAGE}}">
+
+{{JSONLD}}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+{{HEADER}}
+<main id="main">
+{{MAIN}}
+</main>
+{{FOOTER}}
+<script src="{{JS_SITE}}" defer></script>
+{{SCRIPTS}}
+{{ANALYTICS}}
+</body>
+</html>
